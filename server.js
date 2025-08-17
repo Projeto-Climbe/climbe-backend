@@ -1,18 +1,13 @@
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import authrouter from './routes/auth.js'
+import app from './src/app.js';
+import dotenv from 'dotenv';
 
-dotenv.config()
-const app = express()
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}))
+// variáveis de ambiente
+dotenv.config();
 
-app.use(express.json())
-app.use('/api/auth', authrouter)
+// porta do servidor
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`))
+// servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userModel } from '../model/userModel.js';
-import { sendApprovalEmail, sendRejectionEmail } from '../mailer.js';
+import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApprovedLogin } from '../mailer.js';
 
 // Cadastro 
 async function registerUser(userData) {
@@ -25,6 +25,7 @@ async function registerUser(userData) {
   });
 
   await sendApprovalEmail(email, fullName);
+  await sendManagerNotification({ fullName, email });
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
 
@@ -71,12 +72,11 @@ async function updateUserStatus(id, status) {
   if (!user) {
     throw new Error('Usuário não encontrado.');
   }
-
+  
   await userModel.updateStatus(id, status);
 
   if (status === 'approved') {
-    // coloquei um email de aprovação, mas eu posso tirar se não for o ideal
-    await sendApprovalEmail(user.email, user.fullName);
+    await sendApprovedLogin(user.email, user.fullName);
   } else {
     await sendRejectionEmail(user.email, user.fullName);
   }

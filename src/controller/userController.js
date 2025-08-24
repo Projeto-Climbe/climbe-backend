@@ -24,16 +24,16 @@ export async function login(req, res) {
 
 //  /users/:id/status 
 export async function updateUserStatus(req, res) {
-    try {
-        const { id } = req.params;
-        const { status } = req.body;
-        const result = await userService.updateUserStatus(id, status);
-        return res.status(200).json(result);
-    } catch (error) {
-        // Erros podem ser por dados inválidos (400) ou usuário não encontrado (404)
-        const statusCode = error.message.includes('encontrado') ? 404 : 400;
-        return res.status(statusCode).json({ error: error.message });
-    }
+  try {
+    const id = parseInt(req.params.id); 
+    if (isNaN(id)) throw new Error('ID inválido.');
+
+    const { status } = req.body; 
+    const result = await userService.updateUserStatus(id, status);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 }
 
 // /pending

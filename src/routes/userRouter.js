@@ -14,4 +14,4 @@ router.get('/pending', userController.getPendingUsers);
 router.patch('/:id/status', userController.updateUserStatus);
 
 
-export default router;
+export default router;  

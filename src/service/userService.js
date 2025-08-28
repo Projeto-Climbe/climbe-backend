@@ -5,15 +5,20 @@ import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApp
 
 // Cadastro 
 async function registerUser(userData) {
-  const { fullName, email, password } = userData;
+  const { fullName, email, password, cpf, phone } = userData;
 
-  if (!fullName || !email || !password) {
-    throw new Error('O preenchimento de todos os dados é obrigatório!');
+  if (!fullName || !email || !password || !cpf || !phone) {
+    throw new Error('O preenchimento de todos os dados é OBRIGATÓRIO!');
   }
 
-  const existingUser = await userModel.findByEmail(email);
-  if (existingUser) {
+  const existingEmail = await userModel.findByEmail(email);
+  if (existingEmail) {
     throw new Error('Este e-mail já está em uso.');
+  }
+
+  const existingCpf = await userModel.findByCpf(cpf);
+  if (existingCpf) {
+    throw new Error('Este CPF já está em uso.');
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
@@ -82,6 +87,19 @@ async function updateUserStatus(id, status) {
   }
   
   return { success: true, message: `Usuário ${user.fullName} agora está '${status}'.` };
+}
+
+// Dar cargo aos usuários pendentes / aprovados
+async function assignRoleToUser(id, role) {
+    const user = await userModel.findById(id);
+  if (!user) {
+    throw new Error('Usuário não encontrado.');
+  }
+
+  user.role = role;
+  user.save();
+  
+  return { success: true, message: `Cargo '${role}' atribuído ao usuário ${user.fullName}.` };
 }
 
 // Buscar usuários pendentes

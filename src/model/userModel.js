@@ -7,6 +7,9 @@ export const userModel = {
   findByEmail: (email) => 
     prisma.user.findUnique({ where: { email } }),
 
+  findByCpf: (cpf) => 
+    prisma.user.findUnique({ where: { cpf } }),
+
   findById: (id) => 
     prisma.user.findUnique({ where: { id } }),
 

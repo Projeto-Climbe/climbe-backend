@@ -34,12 +34,13 @@ export async function sendApprovedLogin(to, name) {
   await transporter.sendMail({
     from: `"Climbe Team" <${process.env.SMTP_USER}>`,
     to,
-    subject: 'Solicitação Reprovada',
+    subject: 'Solicitação Aprovada',
     html:
      `<p>Olá <strong>${name}</strong>,
     <br/>Parabéns sua solicitação foi aceita!</p>`,
   })
 }
+
 
 export async function sendManagerNotification(newUser) {
   await transporter.sendMail({

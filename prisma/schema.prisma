@@ -9,21 +9,21 @@ datasource db {
 
 model User {
   id         Int      @id @default(autoincrement())
-  full_name   String
+  fullName   String
   email      String   @unique
   cpf        String   @unique
   phone      String
   password   String
-  role_id   Int
+  role_id    Int?      
   status     String   @default("pending")
   createdAt  DateTime @default(now())
 
-  role      Role    @relation(fields: [role_id], references: [id])
+  role      Role?    @relation(fields: [role_id], references: [id])
 }
 
 model Role {
   id     Int     @id @default(autoincrement())
-  name   String
+  name String    @unique
 
   users  User[]
 }

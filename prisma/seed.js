@@ -1,9 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
+// prisma/seed.js
+
+// Troque o 'require' por 'import'
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Cargos padrões
+  console.log('🏁  Iniciando o script de seed...');
+
   const roles = [
+    { name: 'Default' },
     { name: 'Compliance' },
     { name: 'CEO' },
     { name: 'Membro do Conselho' },
@@ -17,21 +22,27 @@ async function main() {
     { name: 'Analista de BPO Financeiro' }
   ];
 
+  console.log(`📝  Carregados ${roles.length} cargos para inserir.`);
+
   for (const role of roles) {
-    await prisma.role.upsert({
+    const result = await prisma.role.upsert({
       where: { name: role.name },
       update: {},
       create: role,
     });
+    console.log(`✅  Cargo processado: ${result.name}`);
   }
+
+  console.log('🎉  Seed finalizado com sucesso!');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
+  .catch((e) => {
+    console.error('💥  Ocorreu um erro inesperado no script de seed:');
     console.error(e);
-    await prisma.$disconnect();
     process.exit(1);
+  })
+  .finally(async () => {
+    console.log('🔌  Desconectando o Prisma Client...');
+    await prisma.$disconnect();
   });

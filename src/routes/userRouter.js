@@ -11,7 +11,9 @@ router.post('/login', userController.login);
 router.use(authMiddleware);
 
 router.get('/pending', userController.getPendingUsers);
+
 router.patch('/:id/status', userController.updateUserStatus);
+router.patch('/:id/role', userController.assignRoleToUser);
 
 
 export default router;  

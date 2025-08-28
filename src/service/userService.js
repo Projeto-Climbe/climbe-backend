@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userModel } from '../model/userModel.js';
+import { roleModel } from '../model/roleModel.js';
 import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApprovedLogin } from '../mailer.js';
 
 // Cadastro 
@@ -26,6 +27,8 @@ async function registerUser(userData) {
   await userModel.create({
     fullName,
     email,
+    cpf,
+    phone,
     password: passwordHash,
   });
 
@@ -89,17 +92,18 @@ async function updateUserStatus(id, status) {
   return { success: true, message: `Usuário ${user.fullName} agora está '${status}'.` };
 }
 
-// Dar cargo aos usuários pendentes / aprovados
-async function assignRoleToUser(id, role) {
-    const user = await userModel.findById(id);
-  if (!user) {
-    throw new Error('Usuário não encontrado.');
-  }
+// Dar cargo aos usuários 
+export async function assignRoleToUser(userId, role_id) {
+  const user = await userModel.findById(userId);
+  if (!user) throw new Error('Usuário não encontrado.');
 
-  user.role = role;
-  user.save();
-  
-  return { success: true, message: `Cargo '${role}' atribuído ao usuário ${user.fullName}.` };
+  const role = await roleModel.findById(role_id);
+  if (!role) throw new Error('Cargo não encontrado.');
+
+
+  await userModel.updateRole(userId, role_id);
+
+  return { success: true, message: `Cargo '${role.name}' atribuído ao usuário ${user.fullName}.` };
 }
 
 // Buscar usuários pendentes
@@ -112,4 +116,5 @@ export const userService = {
   loginUser,
   updateUserStatus,
   getPendingUsers,
+  assignRoleToUser,
 };

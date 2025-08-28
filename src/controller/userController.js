@@ -36,6 +36,23 @@ export async function updateUserStatus(req, res) {
   }
 }
 
+
+export async function assignRoleToUser(req, res) {
+  try {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)) throw new Error('ID de usuário inválido.');
+
+    const { role_id } = req.body;
+    if (!role_id || isNaN(role_id)) throw new Error('ID de cargo inválido.');
+
+    const result = await userService.assignRoleToUser(userId, role_id);
+    res.json(result);
+  } catch (error) {
+    const status = error.message.includes('não encontrado') ? 404 : 400;
+    res.status(status).json({ error: error.message });
+  }
+}
+
 // /pending
 export async function getPendingUsers(req, res) {
     try {

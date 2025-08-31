@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { userModel } from '../model/userModel.js';
-import { roleModel } from '../model/roleModel.js';
+import { roleModel} from '../model/roleModel.js';
 import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApprovedLogin } from '../mailer.js';
 
 // Cadastro 
@@ -24,7 +24,7 @@ async function registerUser(userData) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  await userModel.create({
+  await userModel.save({
     fullName,
     email,
     cpf,
@@ -45,7 +45,7 @@ async function loginUser({ email, password }) {
 
   const user = await userModel.findByEmail(email);
   if (!user) {
-    throw new Error('E-mail ou senha inválidos.');
+    throw new Error('E-mail inválidos.');
   }
   
   if (user.status !== 'approved') {
@@ -54,20 +54,40 @@ async function loginUser({ email, password }) {
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
-    throw new Error('E-mail ou senha inválidos.');
+    throw new Error('Senha inválidos.');
   }
 
   const token = jwt.sign(
-    { id: user.id, name: user.fullName, email: user.email },
+    { id: user.id, name: user.fullName, email: user.email,  cpf: user.cpf, phone: user.phone, roleID: user.roleID },
     process.env.JWT_SECRET,
     { expiresIn: '2h' }
   );
 
   return { 
     success: true, 
-    user: { id: user.id, fullName: user.fullName, email: user.email },
+    user: { id: user.id, fullName: user.fullName, email: user.email, cpf: user.cpf, phone: user.phone, roleID: user.roleID  },
     token 
   };
+}
+
+async function findMany() {
+  const ursers = await userModel.findMany();
+  if (!ursers || ursers.length === 0) {
+    throw new Error('Erro ao buscar usuários ou nenhum usuário encontrado.');
+  }
+  return await userModel.findMany();
+}
+
+async function findById(id) {
+  const user = await userModel.findById(id);
+  if (!user) throw new Error('Usuário não encontrado.');
+  return user;
+}
+
+async function findByEmail(email) {
+  const user = await userModel.findByEmail(email);
+  if (!user) throw new Error('Usuário não encontrado.');
+  return user;
 }
 
 // Atualização de Status 
@@ -93,15 +113,20 @@ async function updateUserStatus(id, status) {
 }
 
 // Dar cargo aos usuários 
-export async function assignRoleToUser(userId, role_id) {
+export async function assignRoleToUser(userId, roleId) {
+  
   const user = await userModel.findById(userId);
   if (!user) throw new Error('Usuário não encontrado.');
 
-  const role = await roleModel.findById(role_id);
+  if (user.status !== 'approved') {
+    throw new Error('Não é possível atribuir cargo a um usuário não aprovado.');
+  }
+
+  const role = await roleModel.findById(roleId);
   if (!role) throw new Error('Cargo não encontrado.');
 
 
-  await userModel.updateRole(userId, role_id);
+  await userModel.updateRole(userId, roleId);
 
   return { success: true, message: `Cargo '${role.name}' atribuído ao usuário ${user.fullName}.` };
 }
@@ -113,6 +138,9 @@ async function getPendingUsers() {
 
 export const userService = {
   registerUser,
+  findById,
+  findByEmail,
+  findMany,
   loginUser,
   updateUserStatus,
   getPendingUsers,

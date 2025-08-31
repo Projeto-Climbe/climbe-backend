@@ -22,6 +22,43 @@ export async function login(req, res) {
   }
 }
 
+export async function getAllUsers(req, res) {
+  try {
+    const users = await userService.findMany();
+    res.json({ users });
+  }
+  catch (error) {
+    const status = error.message.includes('Erro ao buscar usuários') ? 404 : 400;
+    res.status(status).json({ error: error.message });
+  }
+}
+
+// /users/:id
+export async function getUserById(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) throw new Error('ID inválido.');
+    const user = await userService.findById(id);
+    res.json({ user });
+  } catch (error) {
+    const status = error.message.includes('não encontrado') ? 404 : 400;
+    res.status(status).json({ error: error.message });
+  }
+}
+
+// /user/email
+export async function getUserByEmail(req, res) {
+  try{
+    const { email } = req.body;
+    if (!email) throw new Error('Email é obrigatório.');
+    const user = await userService.findByEmail(email);
+    res.json({ user });
+  } catch (error) {
+    const status = error.message.includes('Não encontrado') ? 404 : 400;
+    res.status(status).json({ error: error.message });
+  }
+}
+
 //  /users/:id/status 
 export async function updateUserStatus(req, res) {
   try {
@@ -42,13 +79,13 @@ export async function assignRoleToUser(req, res) {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) throw new Error('ID de usuário inválido.');
 
-    const { role_id } = req.body;
-    if (!role_id || isNaN(role_id)) throw new Error('ID de cargo inválido.');
+    const { roleId } = req.body;
+    if (!roleId || isNaN(roleId)) throw new Error('ID de cargo inválido.');
 
-    const result = await userService.assignRoleToUser(userId, role_id);
+    const result = await userService.assignRoleToUser(userId, roleId);
     res.json(result);
   } catch (error) {
-    const status = error.message.includes('não encontrado') ? 404 : 400;
+    const status = error.message.includes('Não encontrado') ? 404 : 400;
     res.status(status).json({ error: error.message });
   }
 }

@@ -1,6 +1,3 @@
-// prisma/seed.js
-
-// Troque o 'require' por 'import'
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -8,7 +5,6 @@ async function main() {
   console.log('🏁  Iniciando o script de seed...');
 
   const roles = [
-    { name: 'Default' },
     { name: 'Compliance' },
     { name: 'CEO' },
     { name: 'Membro do Conselho' },

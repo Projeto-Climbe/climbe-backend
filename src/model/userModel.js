@@ -1,8 +1,11 @@
 import prisma from '../utils/prismaClient.js';
 
 export const userModel = {
-  create: async (data) => 
+  save: async (data) => 
     prisma.user.create({ data }),
+
+  findMany: async () =>
+    prisma.user.findMany(),
 
   findByEmail: async (email) => 
     prisma.user.findUnique({ where: { email } }),
@@ -19,11 +22,11 @@ export const userModel = {
   updateStatus: async (id, status) => 
     prisma.user.update({ where: { id }, data: { status } }),
 
-  updateRole: async (userId, role_id) =>
+  updateRole: async (userId, roleId) =>
     prisma.user.update({
     where: { id: userId },
     data: {
-      role_id: role_id, 
+    roleId : roleId, 
     },
   }),
 

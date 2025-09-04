@@ -7,11 +7,16 @@ const router = express.Router();
 
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
+router.post('/email', userController.getUserByEmail);
+
+router.get('/pending', userController.getPendingUsers);
+router.get('/:id', userController.getUserById);
+router.get('/', userController.getAllUsers);
+
+router.patch('/:id/status', userController.updateUserStatus);
+router.patch('/:id/role', userController.assignRoleToUser);
 
 router.use(authMiddleware);
 
-router.get('/pending', userController.getPendingUsers);
-router.patch('/users/:id/status', userController.updateUserStatus);
 
-
-export default router;
+export default router;  

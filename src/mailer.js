@@ -29,3 +29,26 @@ export async function sendRejectionEmail(to, name) {
     html: `<p>Olá <strong>${name}</strong>,<br/>Infelizmente sua solicitação foi reprovada. Entre em contato para mais detalhes.</p>`,
   })
 }
+
+export async function sendApprovedLogin(to, name) {
+  await transporter.sendMail({
+    from: `"Climbe Team" <${process.env.SMTP_USER}>`,
+    to,
+    subject: 'Solicitação Aprovada',
+    html:
+     `<p>Olá <strong>${name}</strong>,
+    <br/>Parabéns sua solicitação foi aceita!</p>`,
+  })
+}
+
+
+export async function sendManagerNotification(newUser) {
+  await transporter.sendMail({
+    from: `"Climbe Team" <${process.env.SMTP_USER}>`,
+    to: process.env.MASTER_EMAIL,
+    subject: 'Novo usuário cadastrado',
+    html: `<p>Olá,<br/>O usuário <strong>${newUser.fullName}</strong> (${newUser.email}) acabou de se cadastrar e está aguardando análise.</p>`,
+  });
+}
+
+

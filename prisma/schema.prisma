@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+<<<<<<< HEAD
 model cargos {
   id_cargo   Int        @id @default(autoincrement())
   nome_cargo String     @unique @db.VarChar(255)
@@ -183,3 +184,48 @@ model usuarios {
 
   @@index([id_cargo], map: "id_cargo")
 }
+=======
+model User {
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  email      String   @unique
+  cpf        String   @unique
+  phone      String   
+  password   String
+  roleId    Int?      
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  
+  role      Role?    @relation(fields: [roleId], references: [id])
+
+  permissions UserPermission[]
+
+}
+
+model Role {
+  id     Int     @id @default(autoincrement())
+  name String    @unique
+
+  users  User[]
+}
+
+model Permission{
+  id     Int     @id @default(autoincrement())
+  description   String  @unique
+
+  users UserPermission[]
+}
+
+model UserPermission{
+  id     Int     @id @default(autoincrement())
+  userId Int
+  permissionId Int
+
+  user User @relation(fields: [userId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([userId, permissionId])
+  }
+
+
+>>>>>>> cbf193cde6a8534c5803b9169f6788f8b96494fc

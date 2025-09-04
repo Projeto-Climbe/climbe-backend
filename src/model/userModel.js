@@ -1,19 +1,38 @@
-import prisma from '../utils/prismaClient.js'
+import prisma from '../utils/prismaClient.js';
 
 export const userModel = {
-  create: (data) => 
-    prisma.usuarios.create({ data }),
+  save: async (data) => 
+    prisma.user.create({ data }),
 
-  findByEmail: (email) => 
-    prisma.usuarios.findUnique({ where: { email } }),
+  findMany: async () =>
+    prisma.user.findMany(),
 
-  findById: (id) => 
-    prisma.usuarios.findUnique({ where: { id } }),
+  findByEmail: async (email) => 
+    prisma.user.findUnique({ where: { email } }),
 
-  updateStatus: (id, status) => 
-    prisma.usuarios.update({ where: { id }, data: { status } }),
+  findByCpf: async (cpf) => 
+    prisma.user.findUnique({ where: { cpf } }),
 
-  findPending: () => 
-    prisma.usuarios.findMany({ where: { status: 'pending' },
-         select: { id: true, fullName: true, email: true } }),
-}
+  findById: async (id) => 
+    prisma.user.findUnique({ where: { id } }),
+
+  update: async (id, data) => 
+    prisma.user.update({ where: { id }, data }),
+
+  updateStatus: async (id, status) => 
+    prisma.user.update({ where: { id }, data: { status } }),
+
+  updateRole: async (userId, roleId) =>
+    prisma.user.update({
+    where: { id: userId },
+    data: {
+    roleId : roleId, 
+    },
+  }),
+
+  findPending: async () => 
+    prisma.user.findMany({
+      where: { status: 'pending' },
+      select: { id: true, fullName: true, email: true },
+    }),
+};

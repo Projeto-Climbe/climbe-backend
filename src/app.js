@@ -6,6 +6,9 @@ import empresaRouter from './routes/empresaRouter.js';
 import swaggerUi from 'swagger-ui-express'; // <--- 1. ADICIONE ESTA LINHA
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerOptions from './config/swaggerConfig.js';
+import roleRouter from './routes/roleRouter.js';
+import permissionRouter from './routes/permissionRouter.js';
+import userPermissionRouter from './routes/userPermissionRouter.js';
 
 const app = express();
 
@@ -21,7 +24,10 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rotas
+app.use('/api/user-permission', userPermissionRouter);
+app.use('/api/permission', permissionRouter);
 app.use('/api/user', userRouter);
 app.use('/api/empresa', empresaRouter); // Rota para empresas
+app.use('/api/role', roleRouter);
 
 export default app;

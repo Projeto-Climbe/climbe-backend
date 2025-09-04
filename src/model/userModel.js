@@ -2,18 +2,18 @@ import prisma from '../utils/prismaClient.js'
 
 export const userModel = {
   create: (data) => 
-    prisma.user.create({ data }),
+    prisma.usuarios.create({ data }),
 
   findByEmail: (email) => 
-    prisma.user.findUnique({ where: { email } }),
+    prisma.usuarios.findUnique({ where: { email } }),
 
   findById: (id) => 
-    prisma.user.findUnique({ where: { id } }),
+    prisma.usuarios.findUnique({ where: { id } }),
 
   updateStatus: (id, status) => 
-    prisma.user.update({ where: { id }, data: { status } }),
+    prisma.usuarios.update({ where: { id }, data: { status } }),
 
   findPending: () => 
-    prisma.user.findMany({ where: { status: 'pending' },
+    prisma.usuarios.findMany({ where: { status: 'pending' },
          select: { id: true, fullName: true, email: true } }),
 }

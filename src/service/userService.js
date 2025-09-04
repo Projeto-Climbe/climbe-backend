@@ -3,11 +3,12 @@ import jwt from 'jsonwebtoken';
 import { userModel } from '../model/userModel.js';
 import { sendApprovalEmail, sendRejectionEmail } from '../mailer.js';
 
-// Cadastro 
+// Cadastro
 async function registerUser(userData) {
-  const { fullName, email, password } = userData;
+  // CORREÇÃO: Usando 'nome' e 'senha' para corresponder ao schema.prisma
+  const { nome, email, senha, cpf } = userData;
 
-  if (!fullName || !email || !password) {
+  if (!nome || !email || !senha || !cpf) {
     throw new Error('O preenchimento de todos os dados é obrigatório!');
   }
 
@@ -16,21 +17,26 @@ async function registerUser(userData) {
     throw new Error('Este e-mail já está em uso.');
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  // CORREÇÃO: Usando a variável 'senha'
+  const passwordHash = await bcrypt.hash(senha, 10);
 
+  // CORREÇÃO: Passando o objeto com os nomes de campo corretos ('nome', 'senha')
   await userModel.create({
-    fullName,
+    nome,
     email,
-    password: passwordHash,
+    cpf,
+    senha: passwordHash,
+    id_cargo: 2,
   });
 
-  await sendApprovalEmail(email, fullName);
+  // CORREÇÃO: Passando 'nome' para o e-mail
+  await sendApprovalEmail(email, nome);
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
 
-// Login 
-async function loginUser({ email, password }) {
-  if (!email || !password) {
+// Login
+async function loginUser({ email, senha }) { // CORREÇÃO: Usando 'senha'
+  if (!email || !senha) {
     throw new Error('Preencha os campos de email e senha para acessar o sistema.');
   }
 
@@ -39,29 +45,33 @@ async function loginUser({ email, password }) {
     throw new Error('E-mail ou senha inválidos.');
   }
   
+  // Agora esta verificação de status vai funcionar
   if (user.status !== 'approved') {
     throw new Error('Seu cadastro ainda não foi aprovado.');
   }
 
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  // CORREÇÃO: Comparando a 'senha' recebida com a 'user.senha' do banco
+  const isPasswordMatch = await bcrypt.compare(senha, user.senha);
   if (!isPasswordMatch) {
     throw new Error('E-mail ou senha inválidos.');
   }
-
+  
+  // CORREÇÃO: Usando 'id_usuario' e 'nome' no token JWT
   const token = jwt.sign(
-    { id: user.id, name: user.fullName, email: user.email },
+    { id: user.id_usuario, name: user.nome, email: user.email, permissao: user.id_cargo },
     process.env.JWT_SECRET,
     { expiresIn: '2h' }
   );
 
   return { 
     success: true, 
-    user: { id: user.id, fullName: user.fullName, email: user.email },
+    // CORREÇÃO: Retornando o objeto de usuário com os nomes corretos
+    user: { id: user.id_usuario, fullName: user.nome, email: user.email },
     token 
   };
 }
 
-// Atualização de Status 
+// Atualização de Status
 async function updateUserStatus(id, status) {
   if (!['approved', 'rejected'].includes(status)) {
     throw new Error('Status inválido. Use "approved" ou "rejected".');
@@ -73,15 +83,16 @@ async function updateUserStatus(id, status) {
   }
 
   await userModel.updateStatus(id, status);
-
+  
+  // CORREÇÃO: Usando 'user.nome'
   if (status === 'approved') {
-    // coloquei um email de aprovação, mas eu posso tirar se não for o ideal
-    await sendApprovalEmail(user.email, user.fullName);
+    await sendApprovalEmail(user.email, user.nome);
   } else {
-    await sendRejectionEmail(user.email, user.fullName);
+    await sendRejectionEmail(user.email, user.nome);
   }
   
-  return { success: true, message: `Usuário ${user.fullName} agora está '${status}'.` };
+  // CORREÇÃO: Usando 'user.nome'
+  return { success: true, message: `Usuário ${user.nome} agora está '${status}'.` };
 }
 
 // Buscar usuários pendentes

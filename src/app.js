@@ -1,9 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import userRouter from './routes/userRouter.js'; 
+import empresaRouter from './routes/empresaRouter.js';
+// --- IMPORTAÇÕES DO SWAGGER ---
+import swaggerUi from 'swagger-ui-express'; // <--- 1. ADICIONE ESTA LINHA
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerOptions from './config/swaggerConfig.js';
 
 const app = express();
 
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 // Middlewares
 app.use(cors({
   origin: '*',
@@ -12,7 +18,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Rotas
 app.use('/api/user', userRouter);
+app.use('/api/empresa', empresaRouter); // Rota para empresas
 
 export default app;

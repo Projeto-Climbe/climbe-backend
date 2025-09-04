@@ -4,7 +4,7 @@ import { userModel } from '../model/userModel.js';
 import { roleModel} from '../model/roleModel.js';
 import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApprovedLogin } from '../mailer.js';
 
-// Cadastro 
+// Cadastro
 async function registerUser(userData) {
   const { fullName, email, password, cpf, phone } = userData;
 
@@ -37,9 +37,8 @@ async function registerUser(userData) {
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
 
-// Login 
-async function loginUser({ email, password }) {
-  if (!email || !password) {
+async function loginUser({ email, senha }) {
+  if (!email || !senha) {
     throw new Error('Preencha os campos de email e senha para acessar o sistema.');
   }
 
@@ -48,15 +47,18 @@ async function loginUser({ email, password }) {
     throw new Error('E-mail inválidos.');
   }
   
+  // Agora esta verificação de status vai funcionar
   if (user.status !== 'approved') {
     throw new Error('Seu cadastro ainda não foi aprovado.');
   }
 
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  // CORREÇÃO: Comparando a 'senha' recebida com a 'user.senha' do banco
+  const isPasswordMatch = await bcrypt.compare(senha, user.senha);
   if (!isPasswordMatch) {
     throw new Error('Senha inválidos.');
   }
-
+  
+  // CORREÇÃO: Usando 'id_usuario' e 'nome' no token JWT
   const token = jwt.sign(
     { id: user.id, name: user.fullName, email: user.email,  cpf: user.cpf, phone: user.phone, roleID: user.roleID },
     process.env.JWT_SECRET,
@@ -102,14 +104,16 @@ async function updateUserStatus(id, status) {
   }
   
   await userModel.updateStatus(id, status);
-
+  
+  // CORREÇÃO: Usando 'user.nome'
   if (status === 'approved') {
     await sendApprovedLogin(user.email, user.fullName);
   } else {
-    await sendRejectionEmail(user.email, user.fullName);
+    await sendRejectionEmail(user.email, user.nome);
   }
   
-  return { success: true, message: `Usuário ${user.fullName} agora está '${status}'.` };
+  // CORREÇÃO: Usando 'user.nome'
+  return { success: true, message: `Usuário ${user.nome} agora está '${status}'.` };
 }
 
 // Dar cargo aos usuários 

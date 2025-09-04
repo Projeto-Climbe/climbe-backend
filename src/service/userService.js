@@ -5,7 +5,6 @@ import { sendApprovalEmail, sendRejectionEmail } from '../mailer.js';
 
 // Cadastro
 async function registerUser(userData) {
-  // CORREÇÃO: Usando 'nome' e 'senha' para corresponder ao schema.prisma
   const { nome, email, senha, cpf } = userData;
 
   if (!nome || !email || !senha || !cpf) {
@@ -17,10 +16,8 @@ async function registerUser(userData) {
     throw new Error('Este e-mail já está em uso.');
   }
 
-  // CORREÇÃO: Usando a variável 'senha'
   const passwordHash = await bcrypt.hash(senha, 10);
 
-  // CORREÇÃO: Passando o objeto com os nomes de campo corretos ('nome', 'senha')
   await userModel.create({
     nome,
     email,
@@ -29,13 +26,11 @@ async function registerUser(userData) {
     id_cargo: 2,
   });
 
-  // CORREÇÃO: Passando 'nome' para o e-mail
   await sendApprovalEmail(email, nome);
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
 
-// Login
-async function loginUser({ email, senha }) { // CORREÇÃO: Usando 'senha'
+async function loginUser({ email, senha }) {
   if (!email || !senha) {
     throw new Error('Preencha os campos de email e senha para acessar o sistema.');
   }

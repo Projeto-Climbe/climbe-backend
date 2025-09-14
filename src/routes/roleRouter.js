@@ -12,6 +12,8 @@ router.get('/', roleController.findAll);
 
 router.patch('/:id', roleController.update);
 
+router.delete('/:id', roleController.remove);
+
 router.use(authMiddleware);
 
 export default router;

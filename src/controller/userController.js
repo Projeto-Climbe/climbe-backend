@@ -16,7 +16,6 @@ export async function login(req, res) {
     const result = await userService.loginUser(req.body);
     return res.status(200).json(result);
   } catch (error) {
-    // Erros de login podem ser de "não autorizado" (401) ou "proibido" (403)
     const statusCode = error.message.includes('aprovado') ? 403 : 401;
     return res.status(statusCode).json({ error: error.message });
   }

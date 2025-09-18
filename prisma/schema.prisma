@@ -59,6 +59,7 @@ model empresas {
   endereco               String?             @db.VarChar(255)
   cidade                 String?             @db.VarChar(255)
   estado                 String?             @db.VarChar(100)
+  cep                    String?             @db.VarChar(30)
   telefone               String?             @db.VarChar(20)
   email                  String?             @db.VarChar(255)
   representante_legal    String?             @db.VarChar(255)

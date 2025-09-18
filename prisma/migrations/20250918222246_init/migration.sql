@@ -53,6 +53,7 @@ CREATE TABLE `empresas` (
     `endereco` VARCHAR(255) NULL,
     `cidade` VARCHAR(255) NULL,
     `estado` VARCHAR(100) NULL,
+    `cep` VARCHAR(30) NULL,
     `telefone` VARCHAR(20) NULL,
     `email` VARCHAR(255) NULL,
     `representante_legal` VARCHAR(255) NULL,

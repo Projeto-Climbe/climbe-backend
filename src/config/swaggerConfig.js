@@ -16,6 +16,22 @@ const swaggerDefinition = {
       description: 'Servidor de Desenvolvimento',
     },
   ],
+  components: {
+    securitySchemes: {
+      AppToken: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization', // ou "Authorization" se preferir
+        description: 'Token de acesso da aplicação',
+      },
+    },
+  },
+  security: [
+    {
+      AppToken: [],
+    },
+  ],
 };
 
 const options = {

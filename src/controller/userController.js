@@ -16,7 +16,6 @@ export async function login(req, res) {
     const result = await userService.loginUser(req.body);
     return res.status(200).json(result);
   } catch (error) {
-    // Erros de login podem ser de "não autorizado" (401) ou "proibido" (403)
     const statusCode = error.message.includes('aprovado') ? 403 : 401;
     return res.status(statusCode).json({ error: error.message });
   }
@@ -97,5 +96,18 @@ export async function getPendingUsers(req, res) {
         return res.status(200).json(users);
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao buscar usuários pendentes.' });
+    }
+}
+
+export async function remove(req, res) {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) throw new Error('ID inválido.');
+        
+        await userService.remove(id);
+        res.status(204).send();
+    } catch (error) {
+        const status = error.message.includes('Não encontrado') ? 404 : 400;
+        res.status(status).json({ error: error.message });
     }
 }

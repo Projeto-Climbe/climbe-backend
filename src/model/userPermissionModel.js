@@ -19,4 +19,8 @@ export const userPermissionModel = {
             where: { id },
             data: { userId, permissionId }
         }),
+    delete: async (id) =>
+        prisma.userPermission.delete({
+            where: {id}
+        })
 };

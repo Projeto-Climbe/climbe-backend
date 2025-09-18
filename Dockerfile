@@ -1,44 +1,42 @@
-# ---------- 1) BUILD: instala deps + gera Prisma Client ----------
+# ---------- BUILD ----------
 FROM node:20-alpine AS builder
-ENV NODE_ENV=production
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Copiamos manifestos e a pasta prisma primeiro p/ cache eficiente
+# 1) Copia manifests e Prisma (melhor cache)
 COPY package*.json ./
 COPY prisma ./prisma
 
-# Instala TODAS as deps (inclui "prisma" devDependency), gera client e depois remove devDeps
+# 2) Instala deps e gera Prisma Client
 RUN npm ci \
-  && npx prisma generate --schema=prisma/schema.prisma \
-  && npm prune --omit=dev
+  && npx prisma generate --schema=prisma/schema.prisma
 
-# Agora copie o restante do código
+# 3) Copia o código da aplicação
 COPY src ./src
 COPY server.js ./server.js
 
-# ---------- 2) RUNTIME: imagem final, só com o necessário ----------
+# 4) Remove devDeps para produção
+RUN npm prune --omit=dev
+
+# ---------- RUNTIME ----------
 FROM node:20-alpine AS runner
-ENV NODE_ENV=production
 WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
 
 # Usuário não-root
 RUN addgroup -S nodejs && adduser -S nodejs -G nodejs
 
-# Copia apenas o que precisa para rodar em produção
+# Copia apenas o necessário
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/server.js ./server.js
-# (não copie .env; passe variáveis via --env/--env-file)
+# IMPORTANTE: copiar package.json para evitar erro do npm (se usar npm start)
+COPY package*.json ./
 
-# Porta padrão do app (ajuste se usar outra)
-ENV PORT=3000
 EXPOSE 3000
-
-# Healthcheck sem curl/wget
-HEALTHCHECK --interval=30s --timeout=3s CMD node -e "require('http').get('http://localhost:${PORT}/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
-
 USER nodejs
 
-# Usa o script do package.json -> "start": "node src/app.js"
-CMD ["npm", "start"]
+# Inicie pelo server.js (ele deve fazer o app.listen)
+CMD ["node", "server.js"]

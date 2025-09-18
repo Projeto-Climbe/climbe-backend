@@ -35,4 +35,9 @@ export const userModel = {
       where: { status: 'pending' },
       select: { id: true, fullName: true, email: true },
     }),
+
+    delete: async (id) =>
+      prisma.user.delete({
+          where: {id}
+      })
 };

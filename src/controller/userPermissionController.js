@@ -42,4 +42,17 @@ export async function update(req, res) {
         const status = error.message.includes('Não encontrado') ? 404 : 400;
         res.status(status).json({ error: error.message });
     }   
-} 
+}
+
+export async function remove(req, res) {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) throw new Error('ID inválido.');
+        
+        await userPermissionService.remove(id);
+        res.status(204).send();
+    } catch (error) {
+        const status = error.message.includes('Não encontrado') ? 404 : 400;
+        res.status(status).json({ error: error.message });
+    }
+}

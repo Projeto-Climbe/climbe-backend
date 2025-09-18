@@ -46,10 +46,19 @@ async function update(id, userId, permissionId) {
     return { success: true, message: `Permissão de usuário atualizada com sucesso.` };
 }
 
+async function remove(id) {
+    const permission = await userPermissionModel.findById(id);
+    if (!permission) throw new Error('Permissão não encontrada.');
+    
+    await userPermissionModel.delete(id);
+    return { success: true, message: 'Permissão removida com sucesso.' };
+}
+
 
 export const userPermissionService = {
     create,
     findById,
     findAll,
     update,
+    remove
 } 

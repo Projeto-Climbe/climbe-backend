@@ -5,13 +5,12 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', roleController.create);
+router.use(authMiddleware);
 
+router.post('/', roleController.create);
 router.get('/:id', roleController.findById);
 router.get('/', roleController.findAll);
-
 router.patch('/:id', roleController.update);
-
-router.use(authMiddleware);
+router.delete('/:id', roleController.remove);
 
 export default router;

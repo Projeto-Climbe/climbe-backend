@@ -37,8 +37,8 @@ async function registerUser(userData) {
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
 
-async function loginUser({ email, senha }) {
-  if (!email || !senha) {
+async function loginUser({ email, password }) {
+  if (!email || !password) {
     throw new Error('Preencha os campos de email e senha para acessar o sistema.');
   }
 
@@ -47,18 +47,15 @@ async function loginUser({ email, senha }) {
     throw new Error('E-mail inválidos.');
   }
   
-  // Agora esta verificação de status vai funcionar
   if (user.status !== 'approved') {
     throw new Error('Seu cadastro ainda não foi aprovado.');
   }
 
-  // CORREÇÃO: Comparando a 'senha' recebida com a 'user.senha' do banco
-  const isPasswordMatch = await bcrypt.compare(senha, user.senha);
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
     throw new Error('Senha inválidos.');
   }
   
-  // CORREÇÃO: Usando 'id_usuario' e 'nome' no token JWT
   const token = jwt.sign(
     { id: user.id, name: user.fullName, email: user.email,  cpf: user.cpf, phone: user.phone, roleID: user.roleID },
     process.env.JWT_SECRET,
@@ -105,15 +102,13 @@ async function updateUserStatus(id, status) {
   
   await userModel.updateStatus(id, status);
   
-  // CORREÇÃO: Usando 'user.nome'
   if (status === 'approved') {
     await sendApprovedLogin(user.email, user.fullName);
   } else {
-    await sendRejectionEmail(user.email, user.nome);
+    await sendRejectionEmail(user.email, user.fullName);
   }
   
-  // CORREÇÃO: Usando 'user.nome'
-  return { success: true, message: `Usuário ${user.nome} agora está '${status}'.` };
+  return { success: true, message: `Usuário ${user.fullName} agora está '${status}'.` };
 }
 
 // Dar cargo aos usuários 
@@ -140,6 +135,14 @@ async function getPendingUsers() {
     return await userModel.findPending();
 }
 
+async function remove(id) {
+    const permission = await userModel.findById(id);
+    if (!permission) throw new Error('Permissão não encontrada.');
+    
+    await userModel.delete(id);
+    return { success: true, message: 'Permissão removida com sucesso.' };
+}
+
 export const userService = {
   registerUser,
   findById,
@@ -149,4 +152,5 @@ export const userService = {
   updateUserStatus,
   getPendingUsers,
   assignRoleToUser,
+  remove
 };

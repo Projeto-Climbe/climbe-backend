@@ -15,4 +15,7 @@ export const roleModel = {
       where: { id },
       data: { name }  
     }),
+
+  remove: async (id) =>
+    prisma.role.delete({ where: { id } })
 };

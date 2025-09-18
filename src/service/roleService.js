@@ -33,9 +33,17 @@ async function update(id, data) {
     return { success: true, message: `Cargo '${data}' atualizado com sucesso.` };
 }
 
+async function remove(id) {
+    const role = await roleModel.findById(id);
+    if (!role) throw new Error('Id não encontrado.');
+    await roleModel.remove(id);
+    return { success: true };
+}
+
 export const roleService = {
     create,
     findById,
     update,
     findAll,
+    remove,
 }

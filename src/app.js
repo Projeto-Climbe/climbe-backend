@@ -2,13 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import userRouter from './routes/userRouter.js'; 
 import empresaRouter from './routes/empresaRouter.js';
-// --- IMPORTAÇÕES DO SWAGGER ---
-import swaggerUi from 'swagger-ui-express'; // <--- 1. ADICIONE ESTA LINHA
-import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerOptions from './config/swaggerConfig.js';
 import roleRouter from './routes/roleRouter.js';
 import permissionRouter from './routes/permissionRouter.js';
 import userPermissionRouter from './routes/userPermissionRouter.js';
+import servicesRouter from './routes/servicesRouter.js';
+import notificationsRouter from './routes/notificationsRouter.js';
+
+// --- IMPORTAÇÕES DO SWAGGER ---
+
+import swaggerUi from 'swagger-ui-express'; 
+import swaggerJSDoc from 'swagger-jsdoc';
+
 
 const app = express();
 
@@ -27,7 +32,14 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/user-permission', userPermissionRouter);
 app.use('/api/permission', permissionRouter);
 app.use('/api/user', userRouter);
-app.use('/api/empresa', empresaRouter); // Rota para empresas
+app.use('/api/empresa', empresaRouter); 
 app.use('/api/role', roleRouter);
+app.use('/api/services', servicesRouter);
+app.use('/api/notifications', notificationsRouter);
+
+app.get('/', (req, res) => {
+  res.send('API is running!!!');
+});
+
 
 export default app;

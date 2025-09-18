@@ -18,6 +18,8 @@ import swaggerJSDoc from 'swagger-jsdoc';
 const app = express();
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+app.set('trust proxy', true);
 // Middlewares
 app.use(cors({
   origin: '*',

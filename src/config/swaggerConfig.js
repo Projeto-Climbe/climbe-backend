@@ -12,7 +12,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:3000/api', // Altere a porta se necessário
+      url: 'http://localhost:3000/api',
       description: 'Servidor de Desenvolvimento',
     },
   ],
@@ -34,9 +34,9 @@ const swaggerDefinition = {
   ],
 };
 
+
 const options = {
   swaggerDefinition,
-  // CORREÇÃO: Mude o caminho para apontar para os arquivos .yaml
   apis: ['./src/docs/*.yaml'], 
 };
 

@@ -63,9 +63,8 @@ async function loginUser({ email, password }) {
   );
 
   return { 
-    success: true, 
-    user: { id: user.id, fullName: user.fullName, email: user.email, cpf: user.cpf, phone: user.phone, roleID: user.roleID  },
-    token 
+    success: true,
+    user: token 
   };
 }
 

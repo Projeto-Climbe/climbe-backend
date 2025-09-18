@@ -36,9 +36,18 @@ async function update(id, data) {
     
 }
 
+async function remove(id) {
+    const permission = await permissionModel.findById(id);
+    if (!permission) throw new Error('Permissão não encontrada.');
+    
+    await permissionModel.delete(id);
+    return { success: true, message: 'Permissão removida com sucesso.' };
+}
+
 export const permissionService = {
     create,
     findById,
     findAll,
     update,
+    remove
 } 

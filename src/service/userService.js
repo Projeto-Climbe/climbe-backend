@@ -135,6 +135,14 @@ async function getPendingUsers() {
     return await userModel.findPending();
 }
 
+async function remove(id) {
+    const permission = await userModel.findById(id);
+    if (!permission) throw new Error('Permissão não encontrada.');
+    
+    await userModel.delete(id);
+    return { success: true, message: 'Permissão removida com sucesso.' };
+}
+
 export const userService = {
   registerUser,
   findById,
@@ -144,4 +152,5 @@ export const userService = {
   updateUserStatus,
   getPendingUsers,
   assignRoleToUser,
+  remove
 };

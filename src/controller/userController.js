@@ -98,3 +98,16 @@ export async function getPendingUsers(req, res) {
         return res.status(500).json({ error: 'Erro ao buscar usuários pendentes.' });
     }
 }
+
+export async function remove(req, res) {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) throw new Error('ID inválido.');
+        
+        await userService.remove(id);
+        res.status(204).send();
+    } catch (error) {
+        const status = error.message.includes('Não encontrado') ? 404 : 400;
+        res.status(status).json({ error: error.message });
+    }
+}

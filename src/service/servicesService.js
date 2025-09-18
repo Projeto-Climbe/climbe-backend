@@ -38,7 +38,7 @@ async function update(id, data) {
 async function remove(id) {
     const service = await servicesModel.findById(id);
     if (!service) throw new Error('Id não encontrado');
-    await servicesModel.delete(id);
+    await servicesModel.remove(id);
     return { success: true, message: `Serviço '${service}' removido com sucesso.` };
 }
 

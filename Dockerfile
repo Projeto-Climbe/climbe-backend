@@ -13,7 +13,7 @@ COPY package*.json ./
 COPY prisma ./prisma
 
 # 2) Instala TODAS as deps (inclui dev) e gera Prisma Client
-RUN npm ci \
+RUN npm install \
   && npx prisma generate --schema=prisma/schema.prisma
 
 # 3) Copia o código da aplicação

@@ -1,13 +1,18 @@
 # ---------- BUILD ----------
 FROM node:20-alpine AS builder
 WORKDIR /app
-ENV NODE_ENV=production
 
-# 1) Copia manifests e Prisma (melhor cache)
+# Requisitos do Prisma no Alpine
+RUN apk add --no-cache openssl libc6-compat
+
+# ⚠️ Não force NODE_ENV=production no builder
+# ENV NODE_ENV=production  # <- Removido
+
+# 1) Copia manifests e Prisma (cache melhor)
 COPY package*.json ./
 COPY prisma ./prisma
 
-# 2) Instala deps e gera Prisma Client
+# 2) Instala TODAS as deps (inclui dev) e gera Prisma Client
 RUN npm ci \
   && npx prisma generate --schema=prisma/schema.prisma
 
@@ -24,6 +29,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
+# Requisitos do Prisma no Alpine
+RUN apk add --no-cache openssl libc6-compat
+
 # Usuário não-root
 RUN addgroup -S nodejs && adduser -S nodejs -G nodejs
 
@@ -32,11 +40,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/server.js ./server.js
-# IMPORTANTE: copiar package.json para evitar erro do npm (se usar npm start)
 COPY package*.json ./
 
 EXPOSE 3000
 USER nodejs
-
-# Inicie pelo server.js (ele deve fazer o app.listen)
 CMD ["node", "server.js"]

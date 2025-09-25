@@ -44,7 +44,7 @@ CREATE TABLE `UserPermission` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `empresas` (
+CREATE TABLE `Empresa` (
     `id_empresa` INTEGER NOT NULL AUTO_INCREMENT,
     `nome_fantasia` VARCHAR(255) NOT NULL,
     `razao_social` VARCHAR(255) NOT NULL,
@@ -76,6 +76,37 @@ CREATE TABLE `services` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `contratos` (
+    `id_contrato` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_proposta` INTEGER NOT NULL,
+    `data_inicio` DATE NULL,
+    `data_fim` DATE NULL,
+    `status` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id_contrato`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `relatorios` (
+    `id_relatorio` INTEGER NOT NULL AUTO_INCREMENT,
+    `contrato_id` INTEGER NOT NULL,
+    `url_pdf` VARCHAR(191) NOT NULL,
+    `data_envio` DATE NULL,
+
+    PRIMARY KEY (`id_relatorio`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `propostas` (
+    `id_proposta` INTEGER NOT NULL AUTO_INCREMENT,
+    `empresa_id` INTEGER NOT NULL,
+    `status` VARCHAR(50) NULL,
+    `data_criacao` DATE NULL,
+
+    PRIMARY KEY (`id_proposta`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `notifications` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
@@ -83,6 +114,30 @@ CREATE TABLE `notifications` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `reunioes` (
+    `id_reuniao` INTEGER NOT NULL AUTO_INCREMENT,
+    `titulo` VARCHAR(191) NULL,
+    `empresa_id` INTEGER NOT NULL,
+    `data` DATE NULL,
+    `hora` VARCHAR(191) NULL,
+    `presencial` BOOLEAN NULL,
+    `local` VARCHAR(255) NULL,
+    `pauta` TEXT NULL,
+    `status` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id_reuniao`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `participantes_reuniao` (
+    `id_reuniao` INTEGER NOT NULL,
+    `id_usuario` INTEGER NOT NULL,
+    `id_empresa` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id_reuniao`, `id_usuario`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -95,4 +150,25 @@ ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_userId_fkey` FOREIGN
 ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_permissionId_fkey` FOREIGN KEY (`permissionId`) REFERENCES `Permission`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `contratos` ADD CONSTRAINT `contratos_id_proposta_fkey` FOREIGN KEY (`id_proposta`) REFERENCES `propostas`(`id_proposta`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `relatorios` ADD CONSTRAINT `relatorios_contrato_id_fkey` FOREIGN KEY (`contrato_id`) REFERENCES `contratos`(`id_contrato`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `propostas` ADD CONSTRAINT `propostas_empresa_id_fkey` FOREIGN KEY (`empresa_id`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `reunioes` ADD CONSTRAINT `reunioes_empresa_id_fkey` FOREIGN KEY (`empresa_id`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_reuniao_fkey` FOREIGN KEY (`id_reuniao`) REFERENCES `reunioes`(`id_reuniao`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_usuario_fkey` FOREIGN KEY (`id_usuario`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;

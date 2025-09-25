@@ -8,86 +8,77 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  fullName   String
-  email      String   @unique
-  cpf        String   @unique
-  phone      String   
-  password   String
-  roleId    Int?      
-  status     String   @default("pending")
-  createdAt  DateTime @default(now())
-  
-  role      Role?    @relation(fields: [roleId], references: [id])
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  cpf       String   @unique
+  phone     String
+  password  String
+  roleId    Int?
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
 
-  permissions UserPermission[]
+  role Role? @relation(fields: [roleId], references: [id])
+
+  permissions   UserPermission[]
   notifications notifications[]
 
   participacoes ParticipantesReuniao[] // NOVO: Participantes
 }
 
 model Role {
-  id     Int     @id @default(autoincrement())
-  name String    @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique
 
-  users  User[]
+  users User[]
 }
 
-model Permission{
-  id     Int     @id @default(autoincrement())
-  description   String  @unique
+model Permission {
+  id          Int    @id @default(autoincrement())
+  description String @unique
 
   users UserPermission[]
 }
 
-model UserPermission{
-  id     Int     @id @default(autoincrement())
-  userId Int
+model UserPermission {
+  id           Int @id @default(autoincrement())
+  userId       Int
   permissionId Int
 
-  user User @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
   permission Permission @relation(fields: [permissionId], references: [id])
 
   @@unique([userId, permissionId])
-  }
-
-model empresas {
-  id_empresa             Int                 @id @default(autoincrement())
-  nome_fantasia          String              @db.VarChar(255)
-  razao_social           String              @db.VarChar(255)
-  cnpj                   String              @unique(map: "cnpj") @db.VarChar(18)
-  inscricao_estadual     String?             @db.VarChar(50)
-  endereco               String?             @db.VarChar(255)
-  cidade                 String?             @db.VarChar(255)
-  estado                 String?             @db.VarChar(100)
-  cep                    String?             @db.VarChar(30)
-  telefone               String?             @db.VarChar(20)
-  email                  String?             @db.VarChar(255)
-  representante_legal    String?             @db.VarChar(255)
-  representante_cpf      String?             @db.VarChar(14)
-  representante_rg       String?             @db.VarChar(20)
-  representante_endereco String?             @db.VarChar(255)
-  representante_cidade   String?             @db.VarChar(255)
-  representante_estado   String?             @db.VarChar(100)
-
-  reunioes Reunioes[] 
 }
 
+model Empresa {
+  id_empresa             Int     @id @default(autoincrement())
+  nome_fantasia          String  @db.VarChar(255)
+  razao_social           String  @db.VarChar(255)
+  cnpj                   String  @unique(map: "cnpj") @db.VarChar(18)
+  inscricao_estadual     String? @db.VarChar(50)
+  endereco               String? @db.VarChar(255)
+  cidade                 String? @db.VarChar(255)
+  estado                 String? @db.VarChar(100)
+  cep                    String? @db.VarChar(30)
+  telefone               String? @db.VarChar(20)
+  email                  String? @db.VarChar(255)
+  representante_legal    String? @db.VarChar(255)
+  representante_cpf      String? @db.VarChar(14)
+  representante_rg       String? @db.VarChar(20)
+  representante_endereco String? @db.VarChar(255)
+  representante_cidade   String? @db.VarChar(255)
+  representante_estado   String? @db.VarChar(100)
 
-model services{
-  id      Int      @id @default(autoincrement())
-  name        String   @db.VarChar(255)
+  reunioes             Reunioes[]
+  Propostas            Propostas[]
+  ParticipantesReuniao ParticipantesReuniao[]
 }
 
-model notifications {
-  id               Int      @id @default(autoincrement())
-  userId           Int
-  message          String   @db.VarChar(500)
-  createdAt        DateTime @default(now())
-
-  user             User     @relation(fields: [userId], references: [id])
+model services {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
 }
-
 
 // Modelo de Contratos
 model Contratos {
@@ -97,7 +88,7 @@ model Contratos {
   data_fim    DateTime? @db.Date
   status      String?
 
-  proposta Propostas @relation(fields: [id_proposta], references: [id_proposta])
+  proposta   Propostas    @relation(fields: [id_proposta], references: [id_proposta])
   relatorios Relatorios[]
 
   @@map("contratos")
@@ -105,45 +96,44 @@ model Contratos {
 
 // Modelo de Relatorios
 model Relatorios {
-  id_relatorio Int        @id @default(autoincrement())
+  id_relatorio Int       @id @default(autoincrement())
   contrato_id  Int
   url_pdf      String
-  data_envio   DateTime?  @db.Date
-  
+  data_envio   DateTime? @db.Date
+
   contrato Contratos @relation(fields: [contrato_id], references: [id_contrato])
 
   @@map("relatorios")
 }
 
 model Propostas {
-  id_proposta Int       @id @default(autoincrement())
-  empresa_id  Int
-  status      String?   @db.VarChar(50)
+  id_proposta  Int       @id @default(autoincrement())
+  empresa_id   Int
+  status       String?   @db.VarChar(50)
   data_criacao DateTime? @db.Date
 
   // Relacionamentos
-  empresas    empresas @relation(fields: [empresa_id], references: [id_empresa])
-  contratos   Contratos[]
+  empresa   Empresa     @relation(fields: [empresa_id], references: [id_empresa])
+  contratos Contratos[]
 
   @@map("propostas")
 }
 
 model notifications {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  message     String    @db.VarChar(500)
-  createdAt   DateTime  @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String   @db.VarChar(500)
+  createdAt DateTime @default(now())
 
   // Relacionamento com User
-  user        User      @relation(fields: [userId], references: [id])
-  
+  user User @relation(fields: [userId], references: [id])
+
   @@map("notifications")
 }
 
-
 // Model para a reunioes
 model Reunioes {
-  id_reuniao Int @id @default(autoincrement())
+  id_reuniao Int       @id @default(autoincrement())
   titulo     String?
   empresa_id Int
   data       DateTime? @db.Date
@@ -153,10 +143,9 @@ model Reunioes {
   pauta      String?   @db.Text
   status     String?
 
-  empresas   Empresas @relation(fields: [empresa_id], references: [id_empresa])
+  empresa Empresa @relation(fields: [empresa_id], references: [id_empresa])
 
   participantes ParticipantesReuniao[]
-  
 
   @@map("reunioes")
 }
@@ -164,10 +153,13 @@ model Reunioes {
 model ParticipantesReuniao {
   id_reuniao Int
   id_usuario Int
+  id_empresa Int
 
-  reunioes   Reunioes @relation(fields: [id_reuniao], references: [id_reuniao])
+  reunioes Reunioes @relation(fields: [id_reuniao], references: [id_reuniao])
 
-  usuarios   User @relation(fields: [id_usuario], references: [id]) // Assumindo que 'User' é o nome do seu modelo de usuários
+  usuarios User @relation(fields: [id_usuario], references: [id]) // Assumindo que 'User' é o nome do seu modelo de usuários
+
+  empresa Empresa @relation(fields: [id_empresa], references: [id_empresa])
 
   @@id([id_reuniao, id_usuario])
   @@map("participantes_reuniao")

@@ -138,3 +138,34 @@ model notifications {
   @@map("notifications")
 }
 
+
+// Model para a reunioes
+model Reunioes {
+  id_reuniao Int @id @default(autoincrement())
+  titulo     String?
+  empresa_id Int
+  data       DateTime? @db.Date
+  hora       String? // Mantenho como String se a hora for salva em formato simples (e.g. "10:00:00")
+  presencial Boolean?
+  local      String?   @db.VarChar(255)
+  pauta      String?   @db.Text
+  status     String?
+
+  empresas   Empresas @relation(fields: [empresa_id], references: [id_empresa])
+
+  participantes ParticipantesReuniao[]
+
+  @@map("reunioes")
+}
+
+model ParticipantesReuniao {
+  id_reuniao Int
+  id_usuario Int
+
+  reunioes   Reunioes @relation(fields: [id_reuniao], references: [id_reuniao])
+
+  usuarios   User @relation(fields: [id_usuario], references: [id]) // Assumindo que 'User' é o nome do seu modelo de usuários
+
+  @@id([id_reuniao, id_usuario])
+  @@map("participantes_reuniao")
+}

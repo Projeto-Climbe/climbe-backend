@@ -3,6 +3,13 @@ tags:
     description: API para gerenciamento de relatórios.
 
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Relatorio:
       type: object
@@ -12,17 +19,17 @@ components:
       properties:
         id_relatorio:
           type: integer
-          description: O ID auto-gerado do relatório.
+          description: "O ID auto-gerado do relatório."
         contrato_id:
           type: integer
-          description: O ID do contrato associado.
+          description: "O ID do contrato associado."
         url_pdf:
           type: string
-          description: URL para o arquivo PDF do relatório.
+          description: "URL para o arquivo PDF do relatório."
         data_envio:
           type: string
           format: date
-          description: Data em que o relatório foi enviado.
+          description: "Data em que o relatório foi enviado."
       example:
         contrato_id: 123
         url_pdf: "http://drive.com/relatorio_123.pdf"
@@ -43,13 +50,13 @@ paths:
               $ref: '#/components/schemas/Relatorio'
       responses:
         '201':
-          description: Relatório criado com sucesso.
+          description: "Relatório criado com sucesso."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Relatorio'
         '400':
-          description: Erro na requisição (ex: dados faltando).
+          description: "Erro na requisição (ex: dados faltando)."
     get:
       summary: Retorna a lista de todos os relatórios
       tags: [Relatorios]
@@ -57,7 +64,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de relatórios.
+          description: "Lista de relatórios."
           content:
             application/json:
               schema:
@@ -76,16 +83,16 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID do relatório
+          description: "O ID do relatório"
       responses:
         '200':
-          description: Dados do relatório.
+          description: "Dados do relatório."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Relatorio'
         '404':
-          description: Relatório não encontrado.
+          description: "Relatório não encontrado."
     delete:
       summary: Deleta um relatório pelo ID
       tags: [Relatorios]
@@ -97,9 +104,9 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID do relatório
+          description: "O ID do relatório"
       responses:
         '204':
-          description: Relatório deletado com sucesso.
+          description: "Relatório deletado com sucesso."
         '404':
-          description: Relatório não encontrado.
+          description: "Relatório não encontrado."

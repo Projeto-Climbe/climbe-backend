@@ -3,6 +3,12 @@ tags:
     description: API para gerenciamento de contratos.
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Contrato:
       type: object
@@ -12,21 +18,21 @@ components:
       properties:
         id_contrato:
           type: integer
-          description: O ID auto-gerado do contrato.
+          description: "O ID auto-gerado do contrato."
         id_proposta:
           type: integer
-          description: O ID da proposta relacionada.
+          description: "O ID da proposta relacionada."
         data_inicio:
           type: string
           format: date
-          description: Data de início do contrato.
+          description: "Data de início do contrato."
         data_fim:
           type: string
           format: date
-          description: Data de término do contrato.
+          description: "Data de término do contrato."
         status:
           type: string
-          description: Status atual do contrato.
+          description: "Status atual do contrato."
       example:
         id_proposta: 1
         data_inicio: "2025-01-01"
@@ -48,13 +54,13 @@ paths:
               $ref: '#/components/schemas/Contrato'
       responses:
         '201':
-          description: Contrato criado com sucesso.
+          description: "Contrato criado com sucesso."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Contrato'
         '400':
-          description: Erro na requisição (ex: dados faltando).
+          description: "Erro na requisição (ex: dados faltando)."
     get:
       summary: Retorna a lista de todos os contratos
       tags: [Contratos]
@@ -62,7 +68,7 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de contratos.
+          description: "Lista de contratos."
           content:
             application/json:
               schema:
@@ -81,16 +87,16 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID do contrato
+          description: "O ID do contrato."
       responses:
         '200':
-          description: Dados do contrato.
+          description: "Dados do contrato."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Contrato'
         '404':
-          description: Contrato não encontrado.
+          description: "Contrato não encontrado."
     put:
       summary: Atualiza um contrato pelo ID
       tags: [Contratos]
@@ -102,7 +108,7 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID do contrato
+          description: "O ID do contrato."
       requestBody:
         required: true
         content:
@@ -111,9 +117,9 @@ paths:
               $ref: '#/components/schemas/Contrato'
       responses:
         '200':
-          description: Contrato atualizado com sucesso.
+          description: "Contrato atualizado com sucesso."
         '404':
-          description: Contrato não encontrado.
+          description: "Contrato não encontrado."
     delete:
       summary: Deleta um contrato pelo ID
       tags: [Contratos]
@@ -125,9 +131,9 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID do contrato
+          description: "O ID do contrato."
       responses:
         '204':
-          description: Contrato deletado com sucesso.
+          description: "Contrato deletado com sucesso."
         '404':
-          description: Contrato não encontrado.
+          description: "Contrato não encontrado."

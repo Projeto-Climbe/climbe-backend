@@ -3,6 +3,13 @@ tags:
     description: API para agendamento e gerenciamento de reuniões.
 
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Reuniao:
       type: object
@@ -14,34 +21,34 @@ components:
       properties:
         id_reuniao:
           type: integer
-          description: O ID auto-gerado da reunião.
+          description: "O ID auto-gerado da reunião."
         empresa_id:
           type: integer
-          description: ID da empresa associada à reunião.
+          description: "ID da empresa associada à reunião."
         titulo:
           type: string
-          description: Título da reunião.
+          description: "Título da reunião."
         data:
           type: string
           format: date
-          description: Data agendada para a reunião.
+          description: "Data agendada para a reunião."
         hora:
           type: string
           format: time
-          description: Hora agendada para a reunião.
+          description: "Hora agendada para a reunião."
         presencial:
           type: boolean
-          description: Indica se a reunião será presencial ou online.
+          description: "Indica se a reunião será presencial ou online."
         local:
           type: string
           nullable: true
-          description: Local ou link da sala (se presencial ou online).
+          description: "Local ou link da sala (se presencial ou online)."
         pauta:
           type: string
-          description: Pauta detalhada da reunião.
+          description: "Pauta detalhada da reunião."
         status:
           type: string
-          description: Status da reunião (e.g., Agendada, Concluída, Cancelada).
+          description: "Status da reunião (e.g., Agendada, Concluída, Cancelada)."
       example:
         empresa_id: 15
         titulo: "Kickoff do Contrato X"
@@ -66,13 +73,13 @@ paths:
               $ref: '#/components/schemas/Reuniao'
       responses:
         '201':
-          description: Reunião agendada com sucesso.
+          description: "Reunião agendada com sucesso."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reuniao'
         '400':
-          description: Erro na requisição (ex: dados obrigatórios faltando).
+          description: "Erro na requisição (ex: dados obrigatórios faltando)."
     get:
       summary: Retorna a lista de todas as reuniões
       tags: [Reuniões]
@@ -99,16 +106,16 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID da reunião
+          description: "O ID da reunião"
       responses:
         '200':
-          description: Dados da reunião.
+          description: "Dados da reunião."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reuniao'
         '404':
-          description: Reunião não encontrada.
+          description: "Reunião não encontrada."
     put:
       summary: Atualiza os dados de uma reunião pelo ID
       tags: [Reuniões]
@@ -120,7 +127,7 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID da reunião
+          description: "O ID da reunião"
       requestBody:
         required: true
         content:
@@ -129,9 +136,9 @@ paths:
               $ref: '#/components/schemas/Reuniao'
       responses:
         '200':
-          description: Reunião atualizada com sucesso.
+          description: "Reunião atualizada com sucesso."
         '404':
-          description: Reunião não encontrada.
+          description: "Reunião não encontrada."
     delete:
       summary: Cancela/deleta uma reunião pelo ID
       tags: [Reuniões]
@@ -143,9 +150,9 @@ paths:
           schema:
             type: integer
           required: true
-          description: O ID da reunião
+          description: "O ID da reunião"
       responses:
         '204':
-          description: Reunião cancelada/deletada com sucesso.
+          description: "Reunião cancelada/deletada com sucesso."
         '404':
-          description: Reunião não encontrada.
+          description: "Reunião não encontrada."

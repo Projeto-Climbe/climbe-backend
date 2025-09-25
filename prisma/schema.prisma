@@ -80,7 +80,6 @@ model services {
   name String @db.VarChar(255)
 }
 
-// Modelo de Contratos
 model Contratos {
   id_contrato Int       @id @default(autoincrement())
   id_proposta Int

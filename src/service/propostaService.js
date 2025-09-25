@@ -7,7 +7,6 @@ const createProposta = async (propostaData) => {
     throw new Error('ID da empresa e status são obrigatórios para criar uma proposta.');
   }
   
-  //Garante que a data de criação seja registrada no back-end
   propostaData.data_criacao = new Date(); 
   
   return propostaModel.create(propostaData);

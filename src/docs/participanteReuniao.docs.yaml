@@ -1,0 +1,96 @@
+tags:
+  - name: Participantes de Reunião
+    description: API para gerenciar a associação entre Usuários e Reuniões.
+
+components:
+  schemas:
+    ParticipanteInput:
+      type: object
+      required:
+        - id_reuniao
+        - id_usuario
+      properties:
+        id_reuniao:
+          type: integer
+          description: ID da reunião à qual o usuário será adicionado/removido.
+        id_usuario:
+          type: integer
+          description: ID do usuário a ser adicionado/removido.
+      example:
+        id_reuniao: 101
+        id_usuario: 5
+
+paths:
+  /participantes:
+    post:
+      summary: Adiciona um participante a uma reunião
+      tags: [Participantes de Reunião]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipanteInput'
+      responses:
+        '201':
+          description: Participante adicionado com sucesso.
+        '400':
+          description: Erro na requisição (ex: IDs faltando ou duplicados).
+  /participantes/reuniao/{reuniaoId}:
+    get:
+      summary: Lista todos os participantes de uma reunião
+      tags: [Participantes de Reunião]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: reuniaoId
+          schema:
+            type: integer
+          required: true
+          description: O ID da reunião.
+      responses:
+        '200':
+          description: Lista de participantes (IDs).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_reuniao: { type: integer }
+                    id_usuario: { type: integer }
+        '404':
+          description: Reunião não encontrada.
+    delete:
+      summary: Remove um participante específico de uma reunião
+      tags: [Participantes de Reunião]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: reuniaoId
+          schema:
+            type: integer
+          required: true
+          description: O ID da reunião da qual remover o participante.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id_usuario
+              properties:
+                id_usuario:
+                  type: integer
+                  description: ID do usuário a ser removido.
+      responses:
+        '204':
+          description: Participante removido com sucesso.
+        '404':
+          description: Participante ou Reunião não encontrados.

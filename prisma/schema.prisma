@@ -112,3 +112,29 @@ model Relatorios {
 
   @@map("relatorios")
 }
+
+model Propostas {
+  id_proposta Int       @id @default(autoincrement())
+  empresa_id  Int
+  status      String?   @db.VarChar(50)
+  data_criacao DateTime? @db.Date
+
+  // Relacionamentos
+  empresas    empresas @relation(fields: [empresa_id], references: [id_empresa])
+  contratos   Contratos[]
+
+  @@map("propostas")
+}
+
+model notifications {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  message     String    @db.VarChar(500)
+  createdAt   DateTime  @default(now())
+
+  // Relacionamento com User
+  user        User      @relation(fields: [userId], references: [id])
+  
+  @@map("notifications")
+}
+

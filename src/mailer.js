@@ -67,3 +67,41 @@ export async function sendTemporaryPasswordEmail(to, name, temporaryPassword) {
   });
 }
 
+export async function sendMeetingScheduledEmail({ to, name, meeting }) {
+  const {
+    titulo,
+    data,
+    hora,
+    horaFim,
+    durationMinutes,
+    presencial,
+    local,
+    roomName,
+    pauta,
+  } = meeting;
+
+  const formattedDate = data ? new Date(data).toLocaleDateString('pt-BR') : 'Data a definir';
+  const durationInfo = horaFim
+    ? `${hora || ''} - ${horaFim}`
+    : `${hora || ''} (duração estimada de ${durationMinutes || 60} minutos)`;
+  const locationInfo = presencial
+    ? `Presencial${roomName ? ` - Sala: ${roomName}` : ''}${local ? ` - Local: ${local}` : ''}`
+    : 'Reunião online';
+
+  await transporter.sendMail({
+    from: `"Climbe Team" <${process.env.SMTP_USER}>`,
+    to,
+    subject: `Convite para reunião${titulo ? `: ${titulo}` : ''}`,
+    html: `
+      <p>Olá <strong>${name}</strong>,</p>
+      <p>Você foi convidado para a reunião <strong>${titulo || 'sem título'}</strong>.</p>
+      <ul>
+        <li><strong>Data:</strong> ${formattedDate}</li>
+        <li><strong>Horário:</strong> ${durationInfo}</li>
+        <li><strong>Formato:</strong> ${locationInfo}</li>
+        ${pauta ? `<li><strong>Pauta:</strong> ${pauta}</li>` : ''}
+      </ul>
+      <p>Verifique sua agenda e confirme presença.</p>
+    `,
+  });
+}

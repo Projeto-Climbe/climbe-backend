@@ -1,8 +1,9 @@
-import reuniaoService from '../service/reuniao.service.js';
+import reuniaoService from '../service/reuniaoService.js';
 
 const agendar = async (req, res) => {
   try {
-    const newReuniao = await reuniaoService.agendarReuniao(req.body);
+    const organizerId = req.user?.id;
+    const newReuniao = await reuniaoService.agendarReuniao(req.body, organizerId);
     res.status(201).json(newReuniao);
   } catch (error) {
     res.status(400).json({ error: error.message });

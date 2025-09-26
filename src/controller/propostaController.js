@@ -1,8 +1,13 @@
-import propostaService from '../service/proposta.service.js';
+import propostaService from '../service/propostaService.js';
 
 const create = async (req, res) => {
   try {
-    const newProposta = await propostaService.createProposta(req.body);
+    const userId = req.user?.id;
+    const payload = {
+      ...req.body,
+      usuario_id: userId,
+    };
+    const newProposta = await propostaService.createProposta(payload, userId);
     res.status(201).json(newProposta);
   } catch (error) {
     res.status(400).json({ error: error.message });

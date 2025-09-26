@@ -1,7 +1,10 @@
 import { Router } from 'express';
-import reuniaoController from '../controller/reuniao.controller.js';
+import { authMiddleware } from '../middleware/auth.js';
+import reuniaoController from '../controller/reuniaoController.js';
 
 const router = Router();
+
+router.use(authMiddleware);
 
 router.post('/', reuniaoController.agendar);
 router.get('/', reuniaoController.getAll);

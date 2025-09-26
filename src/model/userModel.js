@@ -16,6 +16,9 @@ export const userModel = {
   findById: async (id) =>
     prisma.user.findUnique({ where: { id } }),
 
+  findByIds: async (ids) =>
+    prisma.user.findMany({ where: { id: { in: ids } } }),
+
   update: async (id, data) =>
     prisma.user.update({ where: { id }, data }),
 

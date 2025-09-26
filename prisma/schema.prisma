@@ -17,6 +17,9 @@ model User {
   roleId    Int?
   status    String   @default("pending")
   createdAt DateTime @default(now())
+  profilePicture String?
+  oauthProvider  String?
+  oauthProviderId String?
 
   role Role? @relation(fields: [roleId], references: [id])
 
@@ -24,6 +27,27 @@ model User {
   notifications notifications[]
 
   participacoes ParticipantesReuniao[] // NOVO: Participantes
+  oauthAccounts OAuthAccount[]
+}
+
+model OAuthAccount {
+  id             Int      @id @default(autoincrement())
+  provider       String
+  providerUserId String
+  accessToken    String
+  refreshToken   String?
+  scope          String?
+  idToken        String?
+  profilePicture String?
+  rawProfile     Json?
+  expiresAt      DateTime?
+  userId         Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId])
 }
 
 model Role {
@@ -163,3 +187,5 @@ model ParticipantesReuniao {
   @@id([id_reuniao, id_usuario])
   @@map("participantes_reuniao")
 }
+
+

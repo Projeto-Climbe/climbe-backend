@@ -34,10 +34,10 @@ model OAuthAccount {
   id             Int      @id @default(autoincrement())
   provider       String
   providerUserId String
-  accessToken    String
-  refreshToken   String?
-  scope          String?
-  idToken        String?
+  accessToken    String   @db.Text
+  refreshToken   String?  @db.Text
+  scope          String?  @db.Text
+  idToken        String?  @db.Text
   profilePicture String?
   rawProfile     Json?
   expiresAt      DateTime?
@@ -187,5 +187,7 @@ model ParticipantesReuniao {
   @@id([id_reuniao, id_usuario])
   @@map("participantes_reuniao")
 }
+
+
 
 

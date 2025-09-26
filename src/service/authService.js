@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto';
 import { userModel } from '../model/userModel.js';
 import { oauthAccountModel } from '../model/oauthAccountModel.js';
 import { notificationsService } from './notificationsService.js';
-import { sendApprovalEmail, sendManagerNotification } from '../mailer.js';
+import { sendApprovalEmail, sendManagerNotification, sendTemporaryPasswordEmail } from '../mailer.js';
 
 const {
   GOOGLE_CLIENT_ID,
@@ -32,6 +32,11 @@ function ensureGoogleClient() {
 
   return googleClient;
 }
+
+function generateTemporaryPassword() {
+  return randomBytes(9).toString('base64url').slice(0, 12);
+}
+
 
 function buildJwtPayload(user) {
   return {
@@ -79,8 +84,8 @@ async function ensureUserExists({ email, fullName, providerUserId, picture }) {
   if (!user) {
     isNewUser = true;
 
-    const randomPassword = randomBytes(24).toString('hex');
-    const passwordHash = await bcrypt.hash(randomPassword, 10);
+    const temporaryPassword = generateTemporaryPassword();
+    const passwordHash = await bcrypt.hash(temporaryPassword, 10);
 
     user = await userModel.save({
       fullName: fullName || email,
@@ -94,6 +99,7 @@ async function ensureUserExists({ email, fullName, providerUserId, picture }) {
       oauthProviderId: providerUserId,
     });
 
+    await sendTemporaryPasswordEmail(email, fullName || email, temporaryPassword);
     await sendApprovalEmail(email, fullName || email);
     await sendManagerNotification({ fullName: fullName || email, email });
     await handleAdminNotifications(user);
@@ -237,3 +243,5 @@ export const authService = {
   getGoogleAuthUrl,
   handleGoogleCallback,
 };
+
+

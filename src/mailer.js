@@ -52,3 +52,18 @@ export async function sendManagerNotification(newUser) {
 }
 
 
+
+
+export async function sendTemporaryPasswordEmail(to, name, temporaryPassword) {
+  await transporter.sendMail({
+    from: `"Climbe Team" <${process.env.SMTP_USER}>`,
+    to,
+    subject: 'Senha temporária para acesso',
+    html: `<p>Olá <strong>${name}</strong>,</p>
+<p>Geramos uma senha temporária para que você consiga acessar o sistema pelo login tradicional:</p>
+<p style="font-size: 16px; font-weight: bold;">${temporaryPassword}</p>
+<p>Use essa senha apenas até definir uma nova senha na aplicação. Após o primeiro acesso, altere-a no menu de perfil ou através do fluxo de redefinição.</p>
+<p>Se você não solicitou esse acesso, ignore esta mensagem.</p>`,
+  });
+}
+

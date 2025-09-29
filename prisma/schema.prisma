@@ -171,7 +171,7 @@ model ParticipantesReuniao {
 }
 
 model Planilha {
-  id_reuniao        Int       @id @default(autoincrement())
+  id      Int       @id @default(autoincrement())
   id_contrato       Int
   url_google_sheets String?   @db.VarChar(255)
   blocked           Boolean
@@ -185,7 +185,7 @@ model Document {
   id_empresa  Int
   type        String   @db.VarChar(255)
   url         String   @db.VarChar(255)
-  validated   Boolean  @default(false) 
+  validated   Boolean  @default(false) // na modelagem esse campo é VARCVHAR(5), mas faz mais sentido ser Boolean
   analystId   Int
 
   empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])

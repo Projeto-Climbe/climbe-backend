@@ -1,4 +1,4 @@
-import reuniaoService from '../service/reuniao.service.js';
+import reuniaoService from '../service/reuniaoService.js';
 
 const agendar = async (req, res) => {
   try {

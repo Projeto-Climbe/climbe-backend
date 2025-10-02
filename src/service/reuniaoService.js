@@ -1,4 +1,4 @@
-import reuniaoModel from '../model/reuniao.model.js';
+import reuniaoModel from '../model/reuniaoModel.js';
 
 const agendarReuniao = async (reuniaoData) => {
   if (!reuniaoData.empresa_id || !reuniaoData.titulo || !reuniaoData.data || !reuniaoData.hora) {

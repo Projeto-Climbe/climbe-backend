@@ -1,4 +1,4 @@
-import participanteModel from '../model/participanteReuniao.model.js';
+import participanteModel from '../model/participanteReuniaoModel.js';
 
 const addParticipante = async (data) => {
   const { id_reuniao, id_usuario } = data;

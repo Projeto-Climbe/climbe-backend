@@ -1,4 +1,4 @@
-import propostaModel from '../model/proposta.model.js';
+import propostaModel from '../model/propostaModel.js';
 // import contractService from './contrato.service.js';
 
 const createProposta = async (propostaData) => {

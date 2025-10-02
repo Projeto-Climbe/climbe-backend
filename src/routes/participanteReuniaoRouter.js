@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import participanteController from '../controller/participanteReuniao.controller.js';
+import participanteController from '../controller/participanteReuniaoController.js';
 import { authMiddleware } from '../middleware/auth.js';
 const router = Router();
 

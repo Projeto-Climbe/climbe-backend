@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import propostaController from '../controller/proposta.controller.js';
+import propostaController from '../controller/propostaController.js';
 import { authMiddleware } from '../middleware/auth.js';
 const router = Router();
 

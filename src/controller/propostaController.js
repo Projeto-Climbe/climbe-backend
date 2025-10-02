@@ -1,4 +1,4 @@
-import propostaService from '../service/proposta.service.js';
+import propostaService from '../service/propostaService.js';
 
 const create = async (req, res) => {
   try {

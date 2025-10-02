@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  title: API - Sistema de Permissões
+  title: API - Sistema de Notificações
   version: 1.0.0
-  description: Documentação de Permissões
+  description: Documentação de Notificações
 servers:
   - url: http://localhost:3000/api
     description: Servidor local
 
 tags:
-  - name: Permissões
-    description: Operações relacionadas ao gerenciamento de permissões
+  - name: Notificações
+    description: Operações relacionadas ao gerenciamento de notificações
 
 components:
   securitySchemes:
@@ -19,43 +19,59 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Permission:
+    Notification:
       type: object
       required:
-        - description
+        - userId
+        - message
       properties:
         id:
           type: integer
           example: 1
-        description:
+        userId:
+          type: integer
+          example: 10
+        message:
           type: string
-          example: Pode criar usuários
+          example: Sua assinatura foi renovada
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-09-18T17:30:00Z
 
-    PermissionCreate:
+    NotificationCreate:
       type: object
       required:
-        - description
+        - userId
+        - message
       properties:
-        description:
+        userId:
+          type: integer
+          example: 10
+        message:
           type: string
-          example: Pode criar usuários
+          example: Sua assinatura foi renovada
 
-    PermissionUpdate:
+    NotificationUpdate:
       type: object
       required:
-        - description
+        - userId
+        - message
       properties:
-        description:
+        userId:
+          type: integer
+          example: 10
+        message:
           type: string
-          example: Pode editar relatórios
+          example: Mensagem atualizada
 
-    PermissionList:
+    NotificationList:
       type: object
       properties:
-        permissions:
+        notifications:
           type: array
           items:
-            $ref: '#/components/schemas/Permission'
+            $ref: '#/components/schemas/Notification'
 
     ApiResponseError:
       type: object
@@ -64,11 +80,21 @@ components:
           type: string
           example: Mensagem de erro
 
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Notificação atualizada com sucesso
+
 paths:
-  /permission:
+  /notifications:
     post:
-      summary: Cria uma nova permissão
-      tags: [Permissões]
+      summary: Cria uma nova notificação
+      tags: [Notificações]
       security:
         - bearerAuth: []
       requestBody:
@@ -76,14 +102,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionCreate'
+              $ref: '#/components/schemas/NotificationCreate'
       responses:
         "201":
-          description: Permissão criada com sucesso
+          description: Notificação criada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/Notification'
         "400":
           description: Erro de validação
           content:
@@ -94,30 +120,30 @@ paths:
           description: Token não fornecido ou inválido
 
     get:
-      summary: Lista todas as permissões
-      tags: [Permissões]
+      summary: Lista todas as notificações
+      tags: [Notificações]
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Lista de permissões cadastradas
+          description: Lista de notificações cadastradas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionList'
+                $ref: '#/components/schemas/NotificationList'
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Nenhuma permissão encontrada
+          description: Nenhuma notificação encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
-  /permission/{id}:
+  /notifications/{id}:
     get:
-      summary: Busca permissão pelo ID
-      tags: [Permissões]
+      summary: Busca notificação pelo ID
+      tags: [Notificações]
       security:
         - bearerAuth: []
       parameters:
@@ -126,17 +152,17 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da notificação
       responses:
         "200":
-          description: Permissão encontrada
+          description: Notificação encontrada
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  permission:
-                    $ref: '#/components/schemas/Permission'
+                  notification:
+                    $ref: '#/components/schemas/Notification'
         "400":
           description: ID inválido
           content:
@@ -146,15 +172,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Notificação não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     patch:
-      summary: Atualiza uma permissão
-      tags: [Permissões]
+      summary: Atualiza uma notificação
+      tags: [Notificações]
       security:
         - bearerAuth: []
       parameters:
@@ -163,20 +189,20 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da notificação
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionUpdate'
+              $ref: '#/components/schemas/NotificationUpdate'
       responses:
         "200":
-          description: Permissão atualizada com sucesso
+          description: Notificação atualizada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: Erro de validação
           content:
@@ -186,15 +212,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Notificação não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     delete:
-      summary: Remove uma permissão
-      tags: [Permissões]
+      summary: Remove uma notificação
+      tags: [Notificações]
       security:
         - bearerAuth: []
       parameters:
@@ -203,10 +229,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da notificação
       responses:
-        "204":
-          description: Permissão removida com sucesso
+        "200":
+          description: Notificação removida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: ID inválido
           content:
@@ -216,7 +246,7 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Notificação não encontrada
           content:
             application/json:
               schema:

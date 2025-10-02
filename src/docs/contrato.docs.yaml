@@ -1,6 +1,6 @@
 tags:
   - name: Contratos
-    description: API para gerenciamento de contratos.
+    description: Gerenciamento de contratos.
 
 components:
   securitySchemes:

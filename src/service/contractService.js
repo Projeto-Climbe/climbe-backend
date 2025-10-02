@@ -1,4 +1,4 @@
-import contratoModel from '../model/contrato.model.js';
+import contratoModel from '../model/contractModel.js';
 
 const createContrato = async (contratoData) => {
   if (!contratoData.id_proposta) {

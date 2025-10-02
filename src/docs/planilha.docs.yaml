@@ -1,0 +1,151 @@
+tags:
+  - name: Planilhas
+    description: Operações relacionadas às planilhas vinculadas a contratos
+
+components:
+  schemas:
+    Planilha:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        id_contrato:
+          type: integer
+          example: 10
+        url_google_sheets:
+          type: string
+          nullable: true
+          example: "https://docs.google.com/spreadsheets/d/abcd1234"
+        blocked:
+          type: boolean
+          example: false
+        view_permission:
+          type: string
+          nullable: true
+          example: "admin,gestor"
+      required:
+        - id_contrato
+        - blocked
+
+paths:
+  /api/planilha:
+    post:
+      tags:
+        - Planilhas
+      summary: Cria uma nova planilha
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Planilha'
+      responses:
+        '201':
+          description: Planilha criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Planilha'
+        '400':
+          description: Erro na criação
+
+    get:
+      tags:
+        - Planilhas
+      summary: Lista todas as planilhas
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de planilhas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  planilhas:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Planilha'
+        '400':
+          description: Erro na busca
+
+  /api/planilha/{id}:
+    get:
+      tags:
+        - Planilhas
+      summary: Busca uma planilha pelo ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID da planilha
+      responses:
+        '200':
+          description: Planilha encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  planilha:
+                    $ref: '#/components/schemas/Planilha'
+        '404':
+          description: Planilha não encontrada
+        '400':
+          description: ID inválido
+
+    patch:
+      tags:
+        - Planilhas
+      summary: Atualiza uma planilha existente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID da planilha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Planilha'
+      responses:
+        '200':
+          description: Planilha atualizada com sucesso
+        '404':
+          description: Planilha não encontrada
+        '400':
+          description: Erro na atualização
+
+    delete:
+      tags:
+        - Planilhas
+      summary: Remove uma planilha
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID da planilha
+      responses:
+        '200':
+          description: Planilha removida com sucesso
+        '404':
+          description: Planilha não encontrada
+        '400':
+          description: Erro na exclusão

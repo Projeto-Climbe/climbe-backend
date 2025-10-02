@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
 import reuniaoController from '../controller/reuniaoController.js';
-
+import { authMiddleware } from '../middleware/auth.js';
 const router = Router();
 
 router.use(authMiddleware);

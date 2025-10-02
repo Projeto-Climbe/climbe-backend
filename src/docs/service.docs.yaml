@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  title: API - Sistema de Permissões
+  title: API - Sistema de Serviços
   version: 1.0.0
-  description: Documentação de Permissões
+  description: Documentação de Serviços
 servers:
   - url: http://localhost:3000/api
     description: Servidor local
 
 tags:
-  - name: Permissões
-    description: Operações relacionadas ao gerenciamento de permissões
+  - name: Serviços
+    description: Operações relacionadas ao gerenciamento de serviços
 
 components:
   securitySchemes:
@@ -19,43 +19,43 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Permission:
+    Service:
       type: object
       required:
-        - description
+        - name
       properties:
         id:
           type: integer
           example: 1
-        description:
+        name:
           type: string
-          example: Pode criar usuários
+          example: Serviço de Limpeza
 
-    PermissionCreate:
+    ServiceCreate:
       type: object
       required:
-        - description
+        - name
       properties:
-        description:
+        name:
           type: string
-          example: Pode criar usuários
+          example: Serviço de Limpeza
 
-    PermissionUpdate:
+    ServiceUpdate:
       type: object
       required:
-        - description
+        - name
       properties:
-        description:
+        name:
           type: string
-          example: Pode editar relatórios
+          example: Serviço de Jardinagem
 
-    PermissionList:
+    ServiceList:
       type: object
       properties:
-        permissions:
+        services:
           type: array
           items:
-            $ref: '#/components/schemas/Permission'
+            $ref: '#/components/schemas/Service'
 
     ApiResponseError:
       type: object
@@ -64,11 +64,21 @@ components:
           type: string
           example: Mensagem de erro
 
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Serviço atualizado com sucesso
+
 paths:
-  /permission:
+  /services:
     post:
-      summary: Cria uma nova permissão
-      tags: [Permissões]
+      summary: Cria um novo serviço
+      tags: [Serviços]
       security:
         - bearerAuth: []
       requestBody:
@@ -76,14 +86,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionCreate'
+              $ref: '#/components/schemas/ServiceCreate'
       responses:
         "201":
-          description: Permissão criada com sucesso
+          description: Serviço criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/Service'
         "400":
           description: Erro de validação
           content:
@@ -94,30 +104,30 @@ paths:
           description: Token não fornecido ou inválido
 
     get:
-      summary: Lista todas as permissões
-      tags: [Permissões]
+      summary: Lista todos os serviços
+      tags: [Serviços]
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Lista de permissões cadastradas
+          description: Lista de serviços cadastrados
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionList'
+                $ref: '#/components/schemas/ServiceList'
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Nenhuma permissão encontrada
+          description: Nenhum serviço encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
-  /permission/{id}:
+  /services/{id}:
     get:
-      summary: Busca permissão pelo ID
-      tags: [Permissões]
+      summary: Busca serviço pelo ID
+      tags: [Serviços]
       security:
         - bearerAuth: []
       parameters:
@@ -126,17 +136,17 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do serviço
       responses:
         "200":
-          description: Permissão encontrada
+          description: Serviço encontrado
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  permission:
-                    $ref: '#/components/schemas/Permission'
+                  services:
+                    $ref: '#/components/schemas/Service'
         "400":
           description: ID inválido
           content:
@@ -146,15 +156,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Serviço não encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     patch:
-      summary: Atualiza uma permissão
-      tags: [Permissões]
+      summary: Atualiza um serviço
+      tags: [Serviços]
       security:
         - bearerAuth: []
       parameters:
@@ -163,20 +173,20 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do serviço
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionUpdate'
+              $ref: '#/components/schemas/ServiceUpdate'
       responses:
         "200":
-          description: Permissão atualizada com sucesso
+          description: Serviço atualizado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: Erro de validação
           content:
@@ -186,15 +196,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Serviço não encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     delete:
-      summary: Remove uma permissão
-      tags: [Permissões]
+      summary: Remove um serviço
+      tags: [Serviços]
       security:
         - bearerAuth: []
       parameters:
@@ -203,10 +213,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do serviço
       responses:
-        "204":
-          description: Permissão removida com sucesso
+        "200":
+          description: Serviço removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: ID inválido
           content:
@@ -216,7 +230,45 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Serviço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+  /services/name:
+    get:
+      summary: Busca serviço pelo nome
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Nome do serviço
+      responses:
+        "200":
+          description: Serviço encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    $ref: '#/components/schemas/Service'
+        "400":
+          description: Nome do serviço não fornecido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Serviço não encontrado
           content:
             application/json:
               schema:

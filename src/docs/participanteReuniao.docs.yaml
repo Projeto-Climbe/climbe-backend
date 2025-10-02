@@ -1,6 +1,6 @@
 tags:
   - name: Participantes de Reunião
-    description: API para gerenciar a associação entre Usuários e Reuniões.
+    description: Gerenciar a associação entre Usuários e Reuniões.
 
 components:
 

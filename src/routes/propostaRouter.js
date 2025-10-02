@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
 import propostaController from '../controller/propostaController.js';
-
+import { authMiddleware } from '../middleware/auth.js';
 const router = Router();
 
 router.use(authMiddleware);

@@ -22,6 +22,13 @@ async function registerUser(userData) {
     throw new Error('Este CPF já está em uso.');
   }
 
+  try {
+    await sendApprovalEmail(email, fullName);
+    await sendManagerNotification({ fullName, email });
+  } catch (error) {
+    throw new Error('Falha ao validar ou enviar e-mail: ' + error.message);
+  }
+
   const passwordHash = await bcrypt.hash(password, 10);
 
   await userModel.save({
@@ -29,13 +36,12 @@ async function registerUser(userData) {
     email,
     cpf,
     phone,
-    password: passwordHash,
+    password: passwordHash
   });
 
-  await sendApprovalEmail(email, fullName);
-  await sendManagerNotification({ fullName, email });
   return { success: true, message: 'Usuário cadastrado com sucesso. E-mail de análise enviado.' };
 }
+
 
 async function loginUser({ email, password }) {
   if (!email || !password) {

@@ -7,7 +7,7 @@ async function create(data) {
 
     const isAnalyst = await documentModel.isAnalyst(data.analystId);
     if (!isAnalyst || isAnalyst.role !== 'Analista') {
-        throw new Error('Apenas analistas podem criar documentos.');
+        throw new Error('Apenas analistas podem criar documentos! Esse usuário não é analista.');
     }
 
     return await documentModel.save(data);

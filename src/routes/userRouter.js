@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-router.post('/signup', userController.signup);
+router.post('/signup', userController.singup);
 router.post('/login', userController.login);
 router.post('/email', userController.getUserByEmail);
 

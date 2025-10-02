@@ -1,14 +1,17 @@
 import propostaModel from '../model/propostaModel.js';
-// import contractService from './contrato.service.js';
 
-const createProposta = async (propostaData) => {
-    
+const createProposta = async (propostaData, usuarioId) => {
   if (!propostaData.empresa_id || !propostaData.status) {
     throw new Error('ID da empresa e status são obrigatórios para criar uma proposta.');
   }
-  
-  propostaData.data_criacao = new Date(); 
-  
+
+  if (!usuarioId) {
+    throw new Error('Usuário responsável não informado.');
+  }
+
+  propostaData.usuario_id = usuarioId;
+  propostaData.data_criacao = new Date();
+
   return propostaModel.create(propostaData);
 };
 
@@ -26,7 +29,7 @@ const getPropostaById = async (id) => {
 
 const updateProposta = async (id, propostaData) => {
   if (propostaData.status === 'aceita') {
-    //await contractService.createContractFromProposal(id);
+    // integração de contrato pode ser adicionada posteriormente
   }
   return propostaModel.update(id, propostaData);
 };

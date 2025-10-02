@@ -1,0 +1,191 @@
+tags:
+  - name: Agenda
+    description: Endpoints para visualização da agenda semanal e mensal.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    WeeklyAgendaResponse:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        meetings:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              date:
+                type: string
+                format: date-time
+              startTime:
+                type: string
+              endTime:
+                type: string
+                nullable: true
+              durationMinutes:
+                type: integer
+              presencial:
+                type: boolean
+              local:
+                type: string
+                nullable: true
+              room:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+              company:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+              contract:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: integer
+                  status:
+                    type: string
+                  dataInicio:
+                    type: string
+                    format: date-time
+                  dataFim:
+                    type: string
+                    format: date-time
+              participants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    email:
+                      type: string
+              agendaNote:
+                type: string
+                nullable: true
+              status:
+                type: string
+        contractEvents:
+          type: array
+          items:
+            type: object
+            properties:
+              contractId:
+                type: integer
+              proposalId:
+                type: integer
+              type:
+                type: string
+                enum: [inicio, fim]
+              status:
+                type: string
+              date:
+                type: string
+                format: date-time
+              company:
+                type: object
+                nullable: true
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+
+    MonthlyAgendaResponse:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+        meetingsByDay:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/WeeklyAgendaResponse/properties/meetings/items'
+        contractEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeeklyAgendaResponse/properties/contractEvents/items'
+
+paths:
+  /calendar/week:
+    get:
+      summary: Retorna os compromissos da semana para o usuário autenticado
+      tags: [Agenda]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: false
+          description: Data de referência para a semana. Se omitida, utiliza a data atual.
+      responses:
+        '200':
+          description: Agenda semanal com reuniões e eventos de contrato.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeeklyAgendaResponse'
+        '400':
+          description: Erro ao interpretar a data.
+
+  /calendar/month:
+    get:
+      summary: Retorna o calendário mensal do usuário autenticado
+      tags: [Agenda]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: false
+          description: Data de referência para o mês. Se omitida, utiliza a data atual.
+      responses:
+        '200':
+          description: Agenda mensal agrupada por dia.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyAgendaResponse'
+        '400':
+          description: Erro ao interpretar a data.

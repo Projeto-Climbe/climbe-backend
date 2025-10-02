@@ -17,6 +17,9 @@ model User {
   roleId    Int?
   status    String   @default("pending")
   createdAt DateTime @default(now())
+  profilePicture String?
+  oauthProvider  String?
+  oauthProviderId String?
 
   role Role? @relation(fields: [roleId], references: [id])
 
@@ -97,6 +100,8 @@ model Contratos {
   planilha Planilha[]
 
   @@map("contratos")
+  reunioes   Reunioes[]
+
 }
 
 // Modelo de Relatorios
@@ -114,15 +119,19 @@ model Relatorios {
 model Propostas {
   id_proposta  Int       @id @default(autoincrement())
   empresa_id   Int
+  usuario_id   Int?
   status       String?   @db.VarChar(50)
   data_criacao DateTime? @db.Date
 
   // Relacionamentos
-  empresa   Empresa     @relation(fields: [empresa_id], references: [id_empresa])
+  empresa  Empresa  @relation(fields: [empresa_id], references: [id_empresa])
+  usuario  User?    @relation(fields: [usuario_id], references: [id])
   contratos Contratos[]
 
   @@map("propostas")
 }
+
+
 
 model notifications {
   id        Int      @id @default(autoincrement())
@@ -138,21 +147,39 @@ model notifications {
 
 // Model para a reunioes
 model Reunioes {
-  id_reuniao Int       @id @default(autoincrement())
-  titulo     String?
-  empresa_id Int
-  data       DateTime? @db.Date
-  hora       String? // Mantenho como String se a hora for salva em formato simples (e.g. "10:00:00")
-  presencial Boolean?
-  local      String?   @db.VarChar(255)
-  pauta      String?   @db.Text
-  status     String?
+  id_reuniao      Int       @id @default(autoincrement())
+  titulo          String?
+  empresa_id      Int
+  data            DateTime? @db.Date
+  hora            String? // Mantenho como String se a hora for salva em formato simples (e.g. "10:00:00")
+  horaFim         String?
+  durationMinutes Int?
+  presencial      Boolean?
+  local           String?   @db.VarChar(255)
+  roomId          Int?
+  contratoId      Int?
+  pauta           String?   @db.Text
+  status          String?
 
-  empresa Empresa @relation(fields: [empresa_id], references: [id_empresa])
+  empresa  Empresa     @relation(fields: [empresa_id], references: [id_empresa])
+  room     MeetingRoom? @relation(fields: [roomId], references: [id])
+  contrato Contratos?   @relation(fields: [contratoId], references: [id_contrato])
 
   participantes ParticipantesReuniao[]
 
   @@map("reunioes")
+}
+
+
+
+model MeetingRoom {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  location  String?  @db.VarChar(255)
+  capacity  Int?
+  reunioes  Reunioes[]
+
+  @@map("meeting_rooms")
 }
 
 model ParticipantesReuniao {

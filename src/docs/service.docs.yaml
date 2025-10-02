@@ -1,0 +1,275 @@
+openapi: 3.0.0
+info:
+  title: API - Sistema de Serviços
+  version: 1.0.0
+  description: Documentação de Serviços
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local
+
+tags:
+  - name: Serviços
+    description: Operações relacionadas ao gerenciamento de serviços
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Service:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Serviço de Limpeza
+
+    ServiceCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Serviço de Limpeza
+
+    ServiceUpdate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Serviço de Jardinagem
+
+    ServiceList:
+      type: object
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+
+    ApiResponseError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensagem de erro
+
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Serviço atualizado com sucesso
+
+paths:
+  /services:
+    post:
+      summary: Cria um novo serviço
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreate'
+      responses:
+        "201":
+          description: Serviço criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+
+    get:
+      summary: Lista todos os serviços
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de serviços cadastrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Nenhum serviço encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+  /services/{id}:
+    get:
+      summary: Busca serviço pelo ID
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do serviço
+      responses:
+        "200":
+          description: Serviço encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    $ref: '#/components/schemas/Service'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Serviço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    patch:
+      summary: Atualiza um serviço
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do serviço
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceUpdate'
+      responses:
+        "200":
+          description: Serviço atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Serviço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    delete:
+      summary: Remove um serviço
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do serviço
+      responses:
+        "200":
+          description: Serviço removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Serviço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+  /services/name:
+    get:
+      summary: Busca serviço pelo nome
+      tags: [Serviços]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Nome do serviço
+      responses:
+        "200":
+          description: Serviço encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    $ref: '#/components/schemas/Service'
+        "400":
+          description: Nome do serviço não fornecido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Serviço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'

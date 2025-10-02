@@ -1,0 +1,253 @@
+openapi: 3.0.0
+info:
+  title: API - Sistema de Notificações
+  version: 1.0.0
+  description: Documentação de Notificações
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local
+
+tags:
+  - name: Notificações
+    description: Operações relacionadas ao gerenciamento de notificações
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Notification:
+      type: object
+      required:
+        - userId
+        - message
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 10
+        message:
+          type: string
+          example: Sua assinatura foi renovada
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-09-18T17:30:00Z
+
+    NotificationCreate:
+      type: object
+      required:
+        - userId
+        - message
+      properties:
+        userId:
+          type: integer
+          example: 10
+        message:
+          type: string
+          example: Sua assinatura foi renovada
+
+    NotificationUpdate:
+      type: object
+      required:
+        - userId
+        - message
+      properties:
+        userId:
+          type: integer
+          example: 10
+        message:
+          type: string
+          example: Mensagem atualizada
+
+    NotificationList:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+
+    ApiResponseError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensagem de erro
+
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Notificação atualizada com sucesso
+
+paths:
+  /notifications:
+    post:
+      summary: Cria uma nova notificação
+      tags: [Notificações]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationCreate'
+      responses:
+        "201":
+          description: Notificação criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+
+    get:
+      summary: Lista todas as notificações
+      tags: [Notificações]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de notificações cadastradas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationList'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Nenhuma notificação encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+  /notifications/{id}:
+    get:
+      summary: Busca notificação pelo ID
+      tags: [Notificações]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID da notificação
+      responses:
+        "200":
+          description: Notificação encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notification:
+                    $ref: '#/components/schemas/Notification'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    patch:
+      summary: Atualiza uma notificação
+      tags: [Notificações]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID da notificação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationUpdate'
+      responses:
+        "200":
+          description: Notificação atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    delete:
+      summary: Remove uma notificação
+      tags: [Notificações]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID da notificação
+      responses:
+        "200":
+          description: Notificação removida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Notificação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'

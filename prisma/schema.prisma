@@ -189,7 +189,7 @@ model Document {
   analystId   Int
 
   empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])
-  analyst     User     @relation(fields: [analystId], references: [id])
+  id_analyst     User     @relation(fields: [analystId], references: [id])
 }
 
 model CompanyService {

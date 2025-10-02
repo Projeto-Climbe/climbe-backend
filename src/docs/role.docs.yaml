@@ -1,0 +1,237 @@
+openapi: 3.0.0
+info:
+  title: API - Sistema de Cargos
+  version: 1.0.0
+  description: Documentação de Cargos (Roles)
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local
+
+tags:
+  - name: Cargos
+    description: Operações relacionadas ao gerenciamento de cargos
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Role:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Administrador
+
+    RoleCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Administrador
+
+    RoleUpdate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Usuário Padrão
+
+    RoleList:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+
+    ApiResponseError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensagem de erro
+
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cargo atualizado com sucesso
+
+paths:
+  /roles:
+    post:
+      summary: Cria um novo cargo
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleCreate'
+      responses:
+        "201":
+          description: Cargo criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+
+    get:
+      summary: Lista todos os cargos
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de cargos cadastrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleList'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Nenhum cargo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+  /roles/{id}:
+    get:
+      summary: Busca cargo pelo ID
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do cargo
+      responses:
+        "200":
+          description: Cargo encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    $ref: '#/components/schemas/Role'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Cargo não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    patch:
+      summary: Atualiza um cargo
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do cargo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdate'
+      responses:
+        "200":
+          description: Cargo atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Cargo não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
+    delete:
+      summary: Remove um cargo
+      tags: [Cargos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do cargo
+      responses:
+        "200":
+          description: Cargo removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
+        "400":
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        "401":
+          description: Token não fornecido ou inválido
+        "404":
+          description: Cargo não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'

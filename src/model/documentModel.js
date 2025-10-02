@@ -10,6 +10,9 @@ export const documentModel = {
   findById: async (id) => 
     prisma.document.findUnique({ where: { id } }),
 
+  isAnalyst: async (id) =>
+    prisma.user.findUnique({ where: { id }, select: { role: true } }),
+
   update: async (id, data) => 
     prisma.document.update({
         where: { id },

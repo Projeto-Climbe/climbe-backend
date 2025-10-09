@@ -77,28 +77,42 @@ model UserPermission {
 }
 
 model Empresa {
-  id_empresa             Int     @id @default(autoincrement())
-  nome_fantasia          String  @db.VarChar(255)
-  razao_social           String  @db.VarChar(255)
-  cnpj                   String  @unique(map: "cnpj") @db.VarChar(18)
-  inscricao_estadual     String? @db.VarChar(50)
-  endereco               String? @db.VarChar(255)
-  cidade                 String? @db.VarChar(255)
-  estado                 String? @db.VarChar(100)
-  cep                    String? @db.VarChar(30)
-  telefone               String? @db.VarChar(20)
-  email                  String? @db.VarChar(255)
-  representante_legal    String? @db.VarChar(255)
-  representante_cpf      String? @db.VarChar(14)
-  representante_rg       String? @db.VarChar(20)
-  representante_endereco String? @db.VarChar(255)
-  representante_cidade   String? @db.VarChar(255)
-  representante_estado   String? @db.VarChar(100)
+  id_empresa           Int      @id @default(autoincrement())
+  nome_fantasia        String   @db.VarChar(255)
+  razao_social         String   @db.VarChar(255)
+  cnpj                 String   @unique(map: "cnpj") @db.VarChar(18)
+  inscricao_estadual   String?  @db.VarChar(50)
+  endereco             String?  @db.VarChar(255)
+  cidade               String?  @db.VarChar(255)
+  estado               String?  @db.VarChar(100)
+  cep                  String?  @db.VarChar(30)
+  telefone             String?  @db.VarChar(20)
+  email                String?  @db.VarChar(255)
 
   reunioes             Reunioes[]
-  Propostas            Propostas[]
-  ParticipantesReuniao ParticipantesReuniao[]
+  propostas            Propostas[]
+  
+  representante        Representante? 
+  
+  @@map("empresas")
 }
+
+model Representante {
+  id_representante     Int      @id @default(autoincrement())
+  nome_legal           String?  @db.VarChar(255) 
+  cpf                  String?  @unique @db.VarChar(14) 
+  rg                   String?  @db.VarChar(20)
+  endereco             String?  @db.VarChar(255)
+  cidade               String?  @db.VarChar(255)
+  estado               String?  @db.VarChar(100)
+
+  empresa_id           Int      @unique 
+  empresa              Empresa  @relation(fields: [empresa_id], references: [id_empresa])
+  
+  @@map("representantes")
+}
+
+
 
 model services {
   id   Int    @id @default(autoincrement())

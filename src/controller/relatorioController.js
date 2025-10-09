@@ -1,4 +1,4 @@
-import relatorioService from '../service/relatorio.service.js';
+import relatorioService from '../service/relatorioService.js';
 
 const create = async (req, res) => {
   try {

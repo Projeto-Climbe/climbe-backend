@@ -1,5 +1,7 @@
 import empresaService from '../service/empresaService.js';
 
+import { uploadToMinio } from '../storage/minioUpload.js';
+
 const create = async (req, res) => {
   try {
     // Adicionar validação de dados aqui (ex: com Joi ou express-validator)
@@ -61,10 +63,25 @@ const remove = async (req, res) => {
   }
 };
 
+const uploadDocumento = async (req, res) => {
+  try {
+    const empresaId = req.params.id;
+    const tipoDocumento = req.body.tipoDocumento || 'documento';
+    if (!req.file) {
+      return res.status(400).json({ message: 'Arquivo não enviado.' });
+    }
+    const result = await uploadToMinio(req.file, empresaId, tipoDocumento);
+    res.status(201).json({ message: 'Documento enviado com sucesso!', ...result });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao fazer upload do documento.', error: error.message });
+  }
+};
+
 export default {
   create,
   getAll,
   getById,
   update,
   remove,
+  uploadDocumento,
 };

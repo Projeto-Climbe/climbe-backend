@@ -1,12 +1,14 @@
-import { Router } from 'express';
-import contratoController from '../controller/contrato.controller.js';
+import express from 'express';
+import { authMiddleware } from '../middleware/auth.js';
+import contractController from '../controller/contractController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/', contratoController.create);
-router.get('/', contratoController.getAll);
-router.get('/:id', contratoController.getById);
-router.put('/:id', contratoController.update);
-router.delete('/:id', contratoController.remove);
+router.use(authMiddleware);
+
+router.post('/', contractController.create);
+router.get('/', contractController.getAll);
+router.get('/:id', contractController.getById);
+router.delete('/:id', contractController.remove);
 
 export default router;

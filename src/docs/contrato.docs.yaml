@@ -40,7 +40,7 @@ components:
         status: "Ativo"
 
 paths:
-  /contratos:
+  /contract:
     post:
       summary: Cria um novo contrato
       tags: [Contratos]
@@ -75,7 +75,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Contrato'
-  /contratos/{id}:
+  /contract/{id}:
     get:
       summary: Busca um contrato pelo ID
       tags: [Contratos]

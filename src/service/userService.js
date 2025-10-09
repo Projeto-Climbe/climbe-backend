@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken';
 import { userModel } from '../model/userModel.js';
 import { roleModel} from '../model/roleModel.js';
 import { sendApprovalEmail, sendRejectionEmail, sendManagerNotification, sendApprovedLogin } from '../mailer.js';
+import crypto from 'crypto';
+import { sendTemporaryPasswordEmail } from '../mailer.js';
+import prisma from '../utils/prismaClient.js';
 
 // Cadastro
 async function registerUser(userData) {
@@ -142,6 +145,42 @@ async function remove(id) {
     return { success: true, message: 'Permissão removida com sucesso.' };
 }
 
+
+// Solicitar redefinição de senha
+async function requestPasswordReset(email) {
+  const user = await userModel.findByEmail(email);
+  if (!user) return; // Não revela se o e-mail existe
+  const token = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 1000 * 60 * 30); // 30 minutos
+  await prisma.passwordResetToken.upsert({
+    where: { userId: user.id },
+    update: { token, expiresAt: expires },
+    create: { userId: user.id, token, expiresAt: expires },
+  });
+  await sendTemporaryPasswordEmail(user.email, user.fullName || user.email, token);
+}
+
+// Redefinir senha com token
+async function resetPassword(token, newPassword) {
+  const reset = await prisma.passwordResetToken.findUnique({ where: { token } });
+  if (!reset || reset.expiresAt < new Date()) throw new Error('Token inválido ou expirado.');
+  const user = await userModel.findById(reset.userId);
+  if (!user) throw new Error('Usuário não encontrado.');
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  await userModel.update(user.id, { password: passwordHash });
+  await prisma.passwordResetToken.delete({ where: { token } });
+}
+
+// Trocar senha autenticado
+async function changePassword(userId, currentPassword, newPassword) {
+  const user = await userModel.findById(userId);
+  if (!user) throw new Error('Usuário não encontrado.');
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) throw new Error('Senha atual incorreta.');
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  await userModel.update(userId, { password: passwordHash });
+}
+
 export const userService = {
   registerUser,
   findById,
@@ -151,5 +190,8 @@ export const userService = {
   updateUserStatus,
   getPendingUsers,
   assignRoleToUser,
-  remove
+  remove,
+  requestPasswordReset,
+  resetPassword,
+  changePassword
 };

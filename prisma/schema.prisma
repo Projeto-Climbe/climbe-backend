@@ -1,3 +1,10 @@
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int     @unique
+  token     String  @unique
+  expiresAt DateTime
+  user      User    @relation(fields: [userId], references: [id])
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -29,6 +36,7 @@ model User {
   participacoes ParticipantesReuniao[] // NOVO: Participantes
   oauthAccounts OAuthAccount[]
   propostas     Propostas[]
+  passwordResetToken PasswordResetToken?
 }
 
 model OAuthAccount {

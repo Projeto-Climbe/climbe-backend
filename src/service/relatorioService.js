@@ -1,4 +1,4 @@
-import relatorioModel from '../model/relatorio.model.js';
+import relatorioModel from '../model/relatorioModel.js';
 
 const createRelatorio = async (relatorioData) => {
   if (!relatorioData.contrato_id || !relatorioData.url_pdf) {

@@ -11,6 +11,8 @@ import notificationsRouter from './routes/notificationsRouter.js';
 import reuniaoRouter from './routes/reuniaoRouter.js';
 import calendarRouter from './routes/calendarRouter.js';
 import propostaRouter from './routes/propostaRouter.js';
+import contractRouter from './routes/contractRouter.js';
+import relatorioRouter from './routes/relatorioRoutes.js';
 
 // --- IMPORTAÇÕES DO SWAGGER ---
 import swaggerUi from 'swagger-ui-express';
@@ -40,8 +42,10 @@ app.use('/api/role', roleRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/propostas', propostaRouter);
+app.use('/api/contract', contractRouter);
 app.use('/api/reunioes', reuniaoRouter);
 app.use('/api/calendar', calendarRouter);
+app.use('/api/reports', relatorioRouter);
 
 app.get('/', (req, res) => {
   res.send('API is running!!!');

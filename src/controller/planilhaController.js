@@ -1,5 +1,5 @@
 import { planilhaService } from '../service/planilhaService.js';
-import * as googleSheetsService from '../services/googleSheetsService.js';
+import * as googleSheetsService from '../service/googleSheetsService.js';
 
 export async function create(req, res) {
   try {
@@ -7,7 +7,7 @@ export async function create(req, res) {
     const auth = req.googleAuth; // Service Account ou OAuth2
 
     // Criar cópia da planilha template
-    const sheetId = await googleSheetsService.createSheetCopy(process.env.SHEET_TEMPLATE_ID, nomePlanilha, auth);
+    const sheetId = await googleSheetsService.createSheetCopy(auth, process.env.SHEET_TEMPLATE_ID, nomePlanilha);
 
     // Dar permissões de acesso
     await googleSheetsService.setSheetPermissions(auth, sheetId, userEmail, 'writer');

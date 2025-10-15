@@ -9,7 +9,7 @@ class ContractsController {
       res.status(400).json({ error: error.message });
     }
   }
-}
+
 
 
   async get(req, res) {
@@ -21,7 +21,7 @@ class ContractsController {
       res.status(404).json({ error: error.message });
     }
   }
-}
+
 
 
   async getAll(req, res) {
@@ -42,7 +42,7 @@ class ContractsController {
       res.status(400).json({ error: error.message });
     }
   }
-}
+
 
 
 

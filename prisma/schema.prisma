@@ -32,12 +32,13 @@ model User {
 
   permissions   UserPermission[]
   notifications notifications[]
-
-  participacoes ParticipantesReuniao[] // NOVO: Participantes
+  document      Document[]
+  participacoes ParticipantesReuniao[]
   oauthAccounts OAuthAccount[]
   propostas     Propostas[]
   passwordResetToken PasswordResetToken?
 }
+
 
 model OAuthAccount {
   id             Int      @id @default(autoincrement())
@@ -57,6 +58,7 @@ model OAuthAccount {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerUserId])
+
 }
 
 model Role {
@@ -106,11 +108,15 @@ model Empresa {
   reunioes             Reunioes[]
   Propostas            Propostas[]
   ParticipantesReuniao ParticipantesReuniao[]
+  document Document[]
+  companyService CompanyService[]
 }
 
-model services {
+model Service {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
+
+  companyService CompanyService[]
 }
 
 model Contratos {
@@ -121,7 +127,9 @@ model Contratos {
   status      String?
 
   proposta   Propostas    @relation(fields: [id_proposta], references: [id_proposta])
+
   relatorios Relatorios[]
+  planilha Planilha[]
 
   @@map("contratos")
   reunioes   Reunioes[]
@@ -221,6 +229,33 @@ model ParticipantesReuniao {
   @@map("participantes_reuniao")
 }
 
+model Planilha {
+  id      Int       @id @default(autoincrement())
+  id_contrato       Int
+  url_google_sheets String?   @db.VarChar(255)
+  blocked           Boolean
+  view_permission   String?   @db.VarChar(255)
 
+  contrato Contratos @relation(fields: [id_contrato], references: [id_contrato])
+  }
 
+model Document {
+  id          Int      @id @default(autoincrement())
+  id_empresa  Int
+  type        String   @db.VarChar(255)
+  url         String   @db.VarChar(255)
+  validated   Boolean  @default(false) // na modelagem esse campo é VARCVHAR(5), mas faz mais sentido ser Boolean
+  analystId   Int
 
+  empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])
+  id_analyst     User     @relation(fields: [analystId], references: [id])
+}
+
+model CompanyService {
+  id          Int      @id @default(autoincrement()) 
+  id_empresa  Int
+  id_service  Int
+
+  empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])
+  service     Service @relation(fields: [id_service], references: [id])
+}

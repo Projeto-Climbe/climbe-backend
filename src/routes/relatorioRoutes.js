@@ -1,8 +1,7 @@
-import express from 'express';
-import { authMiddleware } from '../middleware/auth.js';
+import { Router } from 'express';
 import relatorioController from '../controller/relatorioController.js';
-
-const router = express.Router();
+import { authMiddleware } from '../middleware/auth.js';
+const router = Router();
 
 router.use(authMiddleware);
 

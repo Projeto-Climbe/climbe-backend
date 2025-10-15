@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/request-password-reset', userController.requestPasswordReset);
 router.post('/reset-password', userController.resetPassword);
 
-router.post('/signup', userController.signup);
+router.post('/signup', userController.singup);
 router.post('/login', userController.login);
 
 router.get('/auth/google', authController.googleAuth);

@@ -38,7 +38,7 @@ export async function changePassword(req, res) {
 }
 
 // /signup 
-export async function signup(req, res) {
+export async function singup(req, res) {
   try {
     const result = await userService.registerUser(req.body);
     return res.status(201).json(result);

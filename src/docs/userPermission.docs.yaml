@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  title: API - Sistema de Permissões
+  title: API - Sistema de Permissões de Usuários
   version: 1.0.0
-  description: Documentação de Permissões
+  description: Documentação de Permissões de Usuários
 servers:
   - url: http://localhost:3000/api
     description: Servidor local
 
 tags:
-  - name: Permissões
-    description: Operações relacionadas ao gerenciamento de permissões
+  - name: Permissões de Usuários
+    description: Operações relacionadas ao gerenciamento de permissões atribuídas a usuários
 
 components:
   securitySchemes:
@@ -19,43 +19,55 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Permission:
+    UserPermission:
       type: object
       required:
-        - description
+        - userId
+        - permissionId
       properties:
         id:
           type: integer
           example: 1
-        description:
-          type: string
-          example: Pode criar usuários
+        userId:
+          type: integer
+          example: 10
+        permissionId:
+          type: integer
+          example: 3
 
-    PermissionCreate:
+    UserPermissionCreate:
       type: object
       required:
-        - description
+        - userId
+        - permissionId
       properties:
-        description:
-          type: string
-          example: Pode criar usuários
+        userId:
+          type: integer
+          example: 10
+        permissionId:
+          type: integer
+          example: 3
 
-    PermissionUpdate:
+    UserPermissionUpdate:
       type: object
       required:
-        - description
+        - userId
+        - permissionId
       properties:
-        description:
-          type: string
-          example: Pode editar relatórios
+        userId:
+          type: integer
+          example: 10
+        permissionId:
+          type: integer
+          example: 3
 
-    PermissionList:
+    UserPermissionList:
       type: object
       properties:
-        permissions:
+        userPermission:
           type: array
           items:
-            $ref: '#/components/schemas/Permission'
+            $ref: '#/components/schemas/UserPermission'
 
     ApiResponseError:
       type: object
@@ -64,11 +76,21 @@ components:
           type: string
           example: Mensagem de erro
 
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Permissão de usuário atualizada com sucesso
+
 paths:
-  /permission:
+  /user-permissions:
     post:
-      summary: Cria uma nova permissão
-      tags: [Permissões]
+      summary: Cria uma nova permissão para um usuário
+      tags: [Permissões de Usuários]
       security:
         - bearerAuth: []
       requestBody:
@@ -76,16 +98,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionCreate'
+              $ref: '#/components/schemas/UserPermissionCreate'
       responses:
         "201":
-          description: Permissão criada com sucesso
+          description: Permissão de usuário criada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/UserPermission'
         "400":
-          description: Erro de validação
+          description: Erro de validação ou permissão já existente
           content:
             application/json:
               schema:
@@ -94,30 +116,30 @@ paths:
           description: Token não fornecido ou inválido
 
     get:
-      summary: Lista todas as permissões
-      tags: [Permissões]
+      summary: Lista todas as permissões de usuários
+      tags: [Permissões de Usuários]
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Lista de permissões cadastradas
+          description: Lista de permissões de usuários cadastradas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionList'
+                $ref: '#/components/schemas/UserPermissionList'
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Nenhuma permissão encontrada
+          description: Nenhuma permissão de usuário encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
-  /permission/{id}:
+  /user-permissions/{id}:
     get:
-      summary: Busca permissão pelo ID
-      tags: [Permissões]
+      summary: Busca uma permissão de usuário pelo ID
+      tags: [Permissões de Usuários]
       security:
         - bearerAuth: []
       parameters:
@@ -126,17 +148,17 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da permissão de usuário
       responses:
         "200":
-          description: Permissão encontrada
+          description: Permissão de usuário encontrada
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  permission:
-                    $ref: '#/components/schemas/Permission'
+                  userPermission:
+                    $ref: '#/components/schemas/UserPermission'
         "400":
           description: ID inválido
           content:
@@ -146,15 +168,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Permissão de usuário não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     patch:
-      summary: Atualiza uma permissão
-      tags: [Permissões]
+      summary: Atualiza uma permissão de usuário
+      tags: [Permissões de Usuários]
       security:
         - bearerAuth: []
       parameters:
@@ -163,20 +185,20 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da permissão de usuário
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionUpdate'
+              $ref: '#/components/schemas/UserPermissionUpdate'
       responses:
         "200":
-          description: Permissão atualizada com sucesso
+          description: Permissão de usuário atualizada com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: Erro de validação
           content:
@@ -186,15 +208,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Permissão de usuário não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     delete:
-      summary: Remove uma permissão
-      tags: [Permissões]
+      summary: Remove uma permissão de usuário
+      tags: [Permissões de Usuários]
       security:
         - bearerAuth: []
       parameters:
@@ -203,7 +225,7 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID da permissão de usuário
       responses:
         "204":
           description: Permissão removida com sucesso
@@ -216,7 +238,7 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Permissão de usuário não encontrada
           content:
             application/json:
               schema:

@@ -14,6 +14,44 @@ const findAll = async () => {
   return prisma.reunioes.findMany();
 };
 
+const findManyWithParticipants = async ({ date, participantIds }) => {
+  return prisma.reunioes.findMany({
+    where: {
+      data: date,
+      participantes: {
+        some: {
+          id_usuario: {
+            in: participantIds,
+          },
+        },
+      },
+    },
+    select: {
+      id_reuniao: true,
+      titulo: true,
+      hora: true,
+      horaFim: true,
+      durationMinutes: true,
+    },
+  });
+};
+
+const findManyByRoom = async ({ roomId, date }) => {
+  return prisma.reunioes.findMany({
+    where: {
+      data: date,
+      roomId,
+    },
+    select: {
+      id_reuniao: true,
+      titulo: true,
+      hora: true,
+      horaFim: true,
+      durationMinutes: true,
+    },
+  });
+};
+
 const update = async (id, data) => {
   return prisma.reunioes.update({
     where: { id_reuniao: id },
@@ -31,6 +69,8 @@ export default {
   create,
   findById,
   findAll,
+  findManyWithParticipants,
+  findManyByRoom,
   update,
   remove,
 };

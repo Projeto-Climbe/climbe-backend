@@ -1,5 +1,42 @@
 import { userService } from '../service/userService.js';
 
+// POST /users/request-password-reset
+export async function requestPasswordReset(req, res) {
+  try {
+    const { email } = req.body;
+    if (!email) throw new Error('Email é obrigatório.');
+    await userService.requestPasswordReset(email);
+    res.json({ message: 'Se o e-mail existir, as instruções foram enviadas.' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+// POST /users/reset-password
+export async function resetPassword(req, res) {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) throw new Error('Token e nova senha são obrigatórios.');
+    await userService.resetPassword(token, newPassword);
+    res.json({ message: 'Senha redefinida com sucesso.' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+// PATCH /users/change-password (autenticado)
+export async function changePassword(req, res) {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) throw new Error('Senha atual e nova senha são obrigatórias.');
+    await userService.changePassword(userId, currentPassword, newPassword);
+    res.json({ message: 'Senha alterada com sucesso.' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 // /signup 
 export async function singup(req, res) {
   try {

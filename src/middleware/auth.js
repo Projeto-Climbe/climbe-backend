@@ -14,6 +14,7 @@ export function authMiddleware(req, res, next) {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET)
     req.user = {
+      id: payload.id,
       name: payload.name,
       email: payload.email
     }

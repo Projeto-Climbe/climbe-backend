@@ -9,6 +9,8 @@ class ContractsController {
       res.status(400).json({ error: error.message });
     }
   }
+}
+
 
   async get(req, res) {
     try {
@@ -19,6 +21,8 @@ class ContractsController {
       res.status(404).json({ error: error.message });
     }
   }
+}
+
 
   async getAll(req, res) {
     try {
@@ -38,6 +42,9 @@ class ContractsController {
       res.status(400).json({ error: error.message });
     }
   }
+}
+
+
 
   async delete(req, res) {
     try {

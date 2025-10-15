@@ -97,6 +97,59 @@ components:
           type: string
           description: Mensagem de erro.
 
+    GoogleAuthUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL de autenticacao do Google para redirecionamento.
+
+    OAuthCallbackProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        profilePicture:
+          type: string
+          format: uri
+          nullable: true
+        state:
+          type: string
+          nullable: true
+
+    OAuthCallbackSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        pending:
+          type: boolean
+          example: false
+        user:
+          type: string
+          description: Token JWT gerado pela aplicacao.
+        profile:
+          $ref: '#/components/schemas/OAuthCallbackProfile'
+
+    OAuthCallbackPendingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        pending:
+          type: boolean
+          example: true
+        message:
+          type: string
+
 paths:
   /user/signup:
     post:
@@ -140,6 +193,74 @@ paths:
           description: Não autorizado (e-mail ou senha inválidos).
         '403':
           description: Proibido (cadastro ainda não aprovado).
+
+  /user/auth/google:
+    get:
+      summary: Inicia o fluxo de autenticacao com o Google OAuth 2.0
+      tags: [Usuários]
+      parameters:
+        - in: query
+          name: state
+          required: false
+          schema:
+            type: string
+          description: Valor opcional para manter estado entre as requisicoes.
+      responses:
+        '302':
+          description: Redirecionamento para a tela de consentimento do Google.
+        '200':
+          description: URL de autenticacao retornada para clientes que tratam o fluxo manualmente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleAuthUrlResponse'
+        '500':
+          description: Erro na geracao da URL de autenticacao.
+
+  /user/auth/google/callback:
+    get:
+      summary: Callback do Google OAuth 2.0
+      tags: [Usuários]
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+          description: Codigo de autorizacao retornado pelo Google.
+        - in: query
+          name: state
+          required: false
+          schema:
+            type: string
+          description: Mesmo valor enviado na etapa inicial, se utilizado.
+      responses:
+        '200':
+          description: Autenticacao concluida com sucesso e token emitido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthCallbackSuccessResponse'
+        '202':
+          description: Usuario criado via Google aguardando aprovacao do administrador.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthCallbackPendingResponse'
+        '400':
+          description: Erro ao validar o retorno do Google ou dados incompletos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '403':
+          description: Usuario existente ainda nao aprovado para acesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthCallbackPendingResponse'
+        '500':
+          description: Falha inesperada ao processar o retorno do Google.
 
   /user/pending:
     get:
@@ -187,3 +308,96 @@ paths:
           description: Token não fornecido ou inválido.
         '404':
           description: Usuário não encontrado.
+
+  /user/request-password-reset:
+    post:
+      summary: Solicita redefinição de senha (envia e-mail com token)
+      tags: [Usuários]
+      description: Envia um e-mail com um token de redefinição de senha para o usuário informado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "usuario@email.com"
+      responses:
+        '200':
+          description: E-mail de redefinição enviado com sucesso.
+        '404':
+          description: Usuário não encontrado.
+        '500':
+          description: Erro ao enviar e-mail de redefinição.
+
+  /user/reset-password:
+    post:
+      summary: Redefine a senha usando o token recebido por e-mail
+      tags: [Usuários]
+      description: Permite redefinir a senha informando o token recebido por e-mail.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - newPassword
+              properties:
+                token:
+                  type: string
+                  description: Token recebido por e-mail
+                newPassword:
+                  type: string
+                  format: password
+                  description: Nova senha
+      responses:
+        '200':
+          description: Senha redefinida com sucesso.
+        '400':
+          description: Token inválido ou expirado.
+        '404':
+          description: Usuário não encontrado.
+        '500':
+          description: Erro ao redefinir senha.
+
+  /user/change-password:
+    patch:
+      summary: Troca a senha do usuário autenticado
+      tags: [Usuários]
+      security:
+        - bearerAuth: []
+      description: Permite ao usuário autenticado trocar sua própria senha.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  format: password
+                  description: Senha atual
+                newPassword:
+                  type: string
+                  format: password
+                  description: Nova senha
+      responses:
+        '200':
+          description: Senha alterada com sucesso.
+        '400':
+          description: Senha atual incorreta.
+        '401':
+          description: Token não fornecido ou inválido.
+        '500':
+          description: Erro ao alterar senha.

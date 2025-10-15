@@ -3,7 +3,6 @@ tags:
     description: API para agendamento e gerenciamento de reuniões.
 
 components:
-
   securitySchemes:
     bearerAuth:
       type: http
@@ -11,52 +10,91 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Reuniao:
+    ReuniaoCreateRequest:
       type: object
       required:
         - empresa_id
         - titulo
         - data
         - hora
+        - participantes
       properties:
-        id_reuniao:
-          type: integer
-          description: "O ID auto-gerado da reunião."
         empresa_id:
           type: integer
-          description: "ID da empresa associada à reunião."
         titulo:
           type: string
-          description: "Título da reunião."
         data:
           type: string
           format: date
-          description: "Data agendada para a reunião."
         hora:
           type: string
-          format: time
-          description: "Hora agendada para a reunião."
+          description: "Horário inicial no formato HH:mm ou HH:mm:ss"
+        horaFim:
+          type: string
+          nullable: true
+          description: "Horário de término no formato HH:mm. Se ausente, durationMinutes será usado."
+        durationMinutes:
+          type: integer
+          nullable: true
+          description: "Duração em minutos. Caso não informado, assume 60 minutos (ou será inferido pelo horário final)."
         presencial:
           type: boolean
-          description: "Indica se a reunião será presencial ou online."
+          description: "Indica se o encontro é presencial ou online."
         local:
           type: string
           nullable: true
-          description: "Local ou link da sala (se presencial ou online)."
+          description: "Local físico ou link da reunião."
+        roomId:
+          type: integer
+          nullable: true
+          description: "Identificador da sala cadastrada quando a reunião for presencial."
+        contratoId:
+          type: integer
+          nullable: true
+          description: "Contrato associado ao encontro."
         pauta:
           type: string
-          description: "Pauta detalhada da reunião."
+          nullable: true
         status:
           type: string
-          description: "Status da reunião (e.g., Agendada, Concluída, Cancelada)."
+          nullable: true
+          description: "Status atual (padrão: Agendada)."
+        participantes:
+          type: array
+          items:
+            type: integer
+          description: "IDs dos usuários convidados (o organizador é incluído automaticamente se autenticado)."
       example:
         empresa_id: 15
         titulo: "Kickoff do Contrato X"
         data: "2025-10-20"
-        hora: "10:00:00"
+        hora: "10:00"
+        durationMinutes: 90
         presencial: true
+        roomId: 2
         local: "Sala Alpha"
-        pauta: "Apresentação da Estrutura de Custos."
+        pauta: "Apresentação inicial do contrato"
+        participantes: [4, 7, 12]
+
+    ReuniaoResponse:
+      allOf:
+        - $ref: '#/components/schemas/ReuniaoCreateRequest'
+        - type: object
+          properties:
+            id_reuniao:
+              type: integer
+            room:
+              type: object
+              nullable: true
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+            participantes:
+              type: array
+              items:
+                type: integer
 
 paths:
   /reunioes:
@@ -70,30 +108,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Reuniao'
+              $ref: '#/components/schemas/ReuniaoCreateRequest'
       responses:
         '201':
           description: "Reunião agendada com sucesso."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Reuniao'
+                $ref: '#/components/schemas/ReuniaoResponse'
         '400':
-          description: "Erro na requisição (ex: dados obrigatórios faltando)."
+          description: "Erro na requisição (ex.: conflito de agenda ou dados faltantes)."
     get:
-      summary: Retorna a lista de todas as reuniões
+      summary: Lista todas as reuniões cadastradas
       tags: [Reuniões]
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Lista de reuniões.
+          description: "Lista de reuniões."
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Reuniao'
+                  $ref: '#/components/schemas/ReuniaoResponse'
   /reunioes/{id}:
     get:
       summary: Busca uma reunião pelo ID
@@ -106,18 +144,18 @@ paths:
           schema:
             type: integer
           required: true
-          description: "O ID da reunião"
+          description: "ID da reunião"
       responses:
         '200':
-          description: "Dados da reunião."
+          description: Detalhes da reunião.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Reuniao'
+                $ref: '#/components/schemas/ReuniaoResponse'
         '404':
           description: "Reunião não encontrada."
     put:
-      summary: Atualiza os dados de uma reunião pelo ID
+      summary: Atualiza os dados de uma reunião existente
       tags: [Reuniões]
       security:
         - bearerAuth: []
@@ -127,20 +165,20 @@ paths:
           schema:
             type: integer
           required: true
-          description: "O ID da reunião"
+          description: "ID da reunião"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Reuniao'
+              $ref: '#/components/schemas/ReuniaoCreateRequest'
       responses:
         '200':
           description: "Reunião atualizada com sucesso."
         '404':
           description: "Reunião não encontrada."
     delete:
-      summary: Cancela/deleta uma reunião pelo ID
+      summary: Cancela uma reunião
       tags: [Reuniões]
       security:
         - bearerAuth: []
@@ -150,9 +188,9 @@ paths:
           schema:
             type: integer
           required: true
-          description: "O ID da reunião"
+          description: "ID da reunião"
       responses:
         '204':
-          description: "Reunião cancelada/deletada com sucesso."
+          description: "Reunião cancelada."
         '404':
           description: "Reunião não encontrada."

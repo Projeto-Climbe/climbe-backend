@@ -36,7 +36,7 @@ components:
         data_envio: "2025-05-22"
 
 paths:
-  /relatorios:
+  /reports:
     post:
       summary: Cria um novo relatório
       tags: [Relatorios]
@@ -71,7 +71,31 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Relatorio'
-  /relatorios/{id}:
+  /reports/contract/{contract_id}:
+    get:
+      summary: Busca relatórios pelo ID do contrato
+      tags: [Relatorios]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: contract_id
+          schema:
+            type: integer
+          required: true
+          description: "O ID do contrato"
+      responses:
+        '200':
+          description: "Lista de relatórios associados ao contrato."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Relatorio'
+        '404':
+          description: "Nenhum relatório encontrado para o contrato."
+  /reports/{id}:
     get:
       summary: Busca um relatório pelo ID
       tags: [Relatorios]

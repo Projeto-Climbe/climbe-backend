@@ -2,141 +2,141 @@ tags:
   - name: Contratos
     description: "Gerenciamento do ciclo de vida dos contratos."
 
-components:
-  # O schema de segurança é geralmente definido apenas uma vez no arquivo principal,
-  # mas é replicado aqui para referência de estrutura.
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+# components:
+#   # O schema de segurança é geralmente definido apenas uma vez no arquivo principal,
+#   # mas é replicado aqui para referência de estrutura.
+#   securitySchemes:
+#     bearerAuth:
+#       type: http
+#       scheme: bearer
+#       bearerFormat: JWT
 
-  schemas:
-    Contrato:
-      type: object
-      required:
-        - id_proposta
-        - data_inicio
-      properties:
-        id_contrato:
-          type: integer
-          description: "O ID auto-gerado do contrato."
-        id_proposta:
-          type: integer
-          description: "ID da proposta que originou este contrato."
-        data_inicio:
-          type: string
-          format: date
-          description: "Data de início de vigência do contrato."
-        data_fim:
-          type: string
-          format: date
-          nullable: true
-          description: "Data final de vigência do contrato."
-        status:
-          type: string
-          description: "Status atual do contrato (e.g., ativo, encerrado, vencido)."
-      example:
-        id_proposta: 42
-        data_inicio: "2025-10-01"
-        data_fim: "2026-10-01"
-        status: "ativo"
+#   schemas:
+#     Contrato:
+#       type: object
+#       required:
+#         - id_proposta
+#         - data_inicio
+#       properties:
+#         id_contrato:
+#           type: integer
+#           description: "O ID auto-gerado do contrato."
+#         id_proposta:
+#           type: integer
+#           description: "ID da proposta que originou este contrato."
+#         data_inicio:
+#           type: string
+#           format: date
+#           description: "Data de início de vigência do contrato."
+#         data_fim:
+#           type: string
+#           format: date
+#           nullable: true
+#           description: "Data final de vigência do contrato."
+#         status:
+#           type: string
+#           description: "Status atual do contrato (e.g., ativo, encerrado, vencido)."
+#       example:
+#         id_proposta: 42
+#         data_inicio: "2025-10-01"
+#         data_fim: "2026-10-01"
+#         status: "ativo"
 
-paths:
-  /contratos:
-    post:
-      summary: Cria um novo contrato
-      tags: [Contratos]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Contrato"
-      responses:
-        "201":
-          description: "Contrato criado com sucesso."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Contrato"
-        "400":
-          description: "Erro na requisição (ex: ID da proposta inválido ou faltando)."
-    get:
-      summary: Retorna a lista de todos os contratos
-      tags: [Contratos]
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: "Lista de contratos."
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Contrato"
-  /contratos/{id}:
-    get:
-      summary: "Busca um contrato pelo ID"
-      tags: [Contratos]
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: "O ID do contrato"
-      responses:
-        "200":
-          description: "Dados do contrato."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Contrato"
-        "404":
-          description: "Contrato não encontrado."
-    put:
-      summary: Atualiza um contrato pelo ID
-      tags: [Contratos]
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: "O ID do contrato"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Contrato"
-      responses:
-        "200":
-          description: "Contrato atualizado com sucesso."
-        "404":
-          description: "Contrato não encontrado."
-    delete:
-      summary: Deleta um contrato pelo ID
-      tags: [Contratos]
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: "O ID do contrato"
-      responses:
-        "204":
-          description: "Contrato deletado com sucesso."
-        "404":
-          description: "Contrato não encontrado."
+# paths:
+#   /contratos:
+#     post:
+#       summary: Cria um novo contrato
+#       tags: [Contratos]
+#       security:
+#         - bearerAuth: []
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/Contrato"
+#       responses:
+#         "201":
+#           description: "Contrato criado com sucesso."
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: "#/components/schemas/Contrato"
+#         "400":
+#           description: "Erro na requisição (ex: ID da proposta inválido ou faltando)."
+#     get:
+#       summary: Retorna a lista de todos os contratos
+#       tags: [Contratos]
+#       security:
+#         - bearerAuth: []
+#       responses:
+#         "200":
+#           description: "Lista de contratos."
+#           content:
+#             application/json:
+#               schema:
+#                 type: array
+#                 items:
+#                   $ref: "#/components/schemas/Contrato"
+#   /contratos/{id}:
+#     get:
+#       summary: "Busca um contrato pelo ID"
+#       tags: [Contratos]
+#       security:
+#         - bearerAuth: []
+#       parameters:
+#         - in: path
+#           name: id
+#           schema:
+#             type: integer
+#           required: true
+#           description: "O ID do contrato"
+#       responses:
+#         "200":
+#           description: "Dados do contrato."
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: "#/components/schemas/Contrato"
+#         "404":
+#           description: "Contrato não encontrado."
+#     put:
+#       summary: Atualiza um contrato pelo ID
+#       tags: [Contratos]
+#       security:
+#         - bearerAuth: []
+#       parameters:
+#         - in: path
+#           name: id
+#           schema:
+#             type: integer
+#           required: true
+#           description: "O ID do contrato"
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/Contrato"
+#       responses:
+#         "200":
+#           description: "Contrato atualizado com sucesso."
+#         "404":
+#           description: "Contrato não encontrado."
+#     delete:
+#       summary: Deleta um contrato pelo ID
+#       tags: [Contratos]
+#       security:
+#         - bearerAuth: []
+#       parameters:
+#         - in: path
+#           name: id
+#           schema:
+#             type: integer
+#           required: true
+#           description: "O ID do contrato"
+#       responses:
+#         "204":
+#           description: "Contrato deletado com sucesso."
+#         "404":
+#           description: "Contrato não encontrado."

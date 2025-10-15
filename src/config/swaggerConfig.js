@@ -1,3 +1,5 @@
+
+const isProduction = process.env.NODE_ENV === 'production';
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -11,10 +13,15 @@ const swaggerDefinition = {
     },
   },
   servers: [
-    {
-      url: 'http://localhost:3000/api',
-      description: 'Servidor de Desenvolvimento',
-    },
+    isProduction
+      ? {
+          url: 'https://climbe-api.fluxiaapp.com.br/api',
+          description: 'Servidor de Produção',
+        }
+      : {
+          url: 'http://localhost:3000/api',
+          description: 'Servidor de Desenvolvimento',
+        },
   ],
   components: {
     securitySchemes: {

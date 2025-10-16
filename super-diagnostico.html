@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Diagnóstico Google Sheets</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary { 
+            background: #3498db; 
+            color: white; 
+        }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-success { 
+            background: #27ae60; 
+            color: white; 
+        }
+        .btn-success:hover { background: #219a52; }
+        .btn-info { 
+            background: #17a2b8; 
+            color: white; 
+        }
+        .btn-info:hover { background: #138496; }
+        .content {
+            padding: 30px;
+        }
+        .test-result {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .test-result.success { border-color: #27ae60; background: #d5f4e6; }
+        .test-result.error { border-color: #e74c3c; background: #fadbd8; }
+        .test-result.running { border-color: #3498db; background: #d6eaf8; }
+        .test-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-message { margin: 10px 0; }
+        .test-details { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin-top: 10px;
+            display: none;
+        }
+        .json-pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-success { background: #27ae60; }
+        .status-error { background: #e74c3c; }
+        .status-running { background: #3498db; animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #27ae60);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Super Diagnóstico Google Sheets</h1>
+            <p>Teste completo de autenticação, permissões e criação de planilhas</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="executarDiagnostico()">
+                🎯 Executar Diagnóstico Completo
+            </button>
+            <button class="btn btn-success" onclick="criarCopia()">
+                📄 Criar Cópia da Planilha
+            </button>
+            <button class="btn btn-info" onclick="listarArquivos()">
+                📋 Listar Arquivos
+            </button>
+        </div>
+
+        <div class="content">
+            <div id="progress" class="progress-bar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div id="results">
+                <div class="test-result">
+                    <div class="test-name">
+                        <span class="status-indicator status-running"></span>
+                        Aguardando testes...
+                    </div>
+                    <div class="test-message">
+                        Clique em "Executar Diagnóstico Completo" para começar
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function executarDiagnostico() {
+            const resultsDiv = document.getElementById('results');
+            const progress = document.getElementById('progress');
+            const progressFill = document.getElementById('progressFill');
+            
+            progress.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="test-result running"><div class="test-name"><span class="status-indicator status-running"></span>Executando diagnóstico...</div></div>';
+            
+            try {
+                const response = await fetch('/api/diagnostico');
+                const data = await response.json();
+                
+                displayResults(data);
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="test-result error">
+                        <div class="test-name">
+                            <span class="status-indicator status-error"></span>
+                            Erro no diagnóstico
+                        </div>
+                        <div class="test-message">${error.message}</div>
+                    </div>
+                `;
+            } finally {
+                progress.style.display = 'none';
+            }
+        }
+
+        async function criarCopia() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-result running"><div class="test-name"><span class="status-indicator status-running"></span>Criando cópia...</div></div>';
+            
+            try {
+                const response = await fetch('/api/criar-copia');
+                const data = await response.json();
+                
+                displaySingleResult('Criação de Cópia', data);
+            } catch (error) {
+                displaySingleResult('Criação de Cópia', { sucesso: false, erro: error.message });
+            }
+        }
+
+        async function listarArquivos() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="test-result running"><div class="test-name"><span class="status-indicator status-running"></span>Listando arquivos...</div></div>';
+            
+            try {
+                const response = await fetch('/api/listar-arquivos');
+                const data = await response.json();
+                
+                displaySingleResult('Listagem de Arquivos', data);
+            } catch (error) {
+                displaySingleResult('Listagem de Arquivos', { sucesso: false, erro: error.message });
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+            
+            data.testes.forEach((teste, index) => {
+                const statusClass = teste.sucesso ? 'success' : 'error';
+                const statusIcon = teste.sucesso ? '✅' : '❌';
+                
+                html += `
+                    <div class="test-result ${statusClass}">
+                        <div class="test-name">
+                            <span class="status-indicator status-${statusClass}"></span>
+                            ${teste.nome}
+                        </div>
+                        <div class="test-message">
+                            <strong>${statusIcon} ${teste.mensagem}</strong>
+                        </div>
+                        <button onclick="toggleDetails('${teste.nome}-${index}')" style="margin-top: 10px; padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                            📊 Detalhes
+                        </button>
+                        <div id="${teste.nome}-${index}" class="test-details">
+                            <pre class="json-pre">${JSON.stringify(teste, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function displaySingleResult(nome, data) {
+            const resultsDiv = document.getElementById('results');
+            const statusClass = data.sucesso ? 'success' : 'error';
+            const statusIcon = data.sucesso ? '✅' : '❌';
+            
+            resultsDiv.innerHTML = `
+                <div class="test-result ${statusClass}">
+                    <div class="test-name">
+                        <span class="status-indicator status-${statusClass}"></span>
+                        ${nome}
+                    </div>
+                    <div class="test-message">
+                        <strong>${statusIcon} ${data.mensagem || data.erro || 'Operação concluída'}</strong>
+                    </div>
+                    <button onclick="toggleDetails('single-result')" style="margin-top: 10px; padding: 5px 10px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                        📊 Detalhes
+                    </button>
+                    <div id="single-result" class="test-details">
+                        <pre class="json-pre">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDetails(id) {
+            const element = document.getElementById(id);
+            element.style.display = element.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

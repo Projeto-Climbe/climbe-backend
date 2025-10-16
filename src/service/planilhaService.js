@@ -1,35 +1,23 @@
-import planilhaModel from '../model/planilhaModel.js';
+import { PrismaClient } from '@prisma/client';
+import { GoogleSheetsService } from './googleSheetsService.js';
 
-export const planilhaService = {
-  async create(data) {
-    return prisma.planilhaModel.create({ data });
-  },
+const prisma = new PrismaClient();
+const sheetsService = new GoogleSheetsService();
 
-  async findAll() {
-    return prisma.planilhaModel.findMany({
-      include: { contrato: true },
+export class PlanilhaService {
+  static async criarCopiaPlanilha(idContrato) {
+    const templateId = process.env.SHEET_TEMPLATE_ID;
+    const folderId = process.env.PASTA_DESTINO;
+
+    const planilhaCopia = await sheetsService.copySpreadsheet(templateId, folderId);
+
+    return prisma.planilha.create({
+      data: {
+        id_contrato: idContrato,
+        url_google_sheets: `https://docs.google.com/spreadsheets/d/${planilhaCopia.id}`,
+        blocked: false,
+        view_permission: 'editor',
+      },
     });
-  },
-
-  async findById(id) {
-    const planilha = await prisma.planilhaModel.findUnique({
-      where: { id },
-      include: { contrato: true },
-    });
-    if (!planilha) throw new Error('Planilha não encontrada');
-    return planilha;
-  },
-
-  async update(id, data) {
-    return prisma.plaplanilhaModelnilha.update({
-      where: { id },
-      data,
-    });
-  },
-
-  async remove(id) {
-    return prisma.planilhaModel.delete({
-      where: { id },
-    });
-  },
-};
+  }
+}

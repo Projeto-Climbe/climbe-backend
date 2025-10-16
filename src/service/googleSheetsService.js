@@ -1,56 +1,27 @@
 import { google } from 'googleapis';
+import dotenv from 'dotenv';
+dotenv.config();
 
+const auth = new google.auth.GoogleAuth({
+  credentials: {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  },
+  scopes: [
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/spreadsheets',
+  ],
+});
 
- //Cria uma cópia de uma planilha modelo no Google Drive.
+const drive = google.drive({ version: 'v3', auth });
 
-export async function createSheetCopy(auth, templateId, newName) {
-  const drive = google.drive({ version: 'v3', auth });
-
-  const { data } = await drive.files.copy({
+export async function copyPlanilha(templateId, pastaDestino, nome = 'Cópia de Teste') {
+  const res = await drive.files.copy({
     fileId: templateId,
-    requestBody: { name: newName },
-  });
-
-  return data.id;
-}
-
- //Define permissões para um usuário na planilha.
-export async function setSheetPermissions(auth, sheetId, userEmail, role = 'reader') {
-  const drive = google.drive({ version: 'v3', auth });
-
-  await drive.permissions.create({
-    fileId: sheetId,
     requestBody: {
-      type: 'user',
-      role,
-      emailAddress: userEmail,
+      name: nome,
+      parents: [pastaDestino],
     },
   });
-}
-
-
-//Protege a primeira aba da planilha (bloqueia edição).
-export async function protectSheet(auth, sheetId) {
-  const sheets = google.sheets({ version: 'v4', auth });
-  const { data } = await sheets.spreadsheets.get({ spreadsheetId: sheetId });
-
-  const firstSheetId = data.sheets[0].properties.sheetId;
-
-  await sheets.spreadsheets.batchUpdate({
-    spreadsheetId: sheetId,
-    requestBody: {
-      requests: [
-        {
-          addProtectedRange: {
-            protectedRange: {
-              range: { sheetId: firstSheetId },
-              description: 'Área protegida',
-              warningOnly: false,
-              editors: { users: [] },
-            },
-          },
-        },
-      ],
-    },
-  });
+  return res.data;
 }

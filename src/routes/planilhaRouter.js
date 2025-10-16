@@ -1,16 +1,21 @@
 import express from 'express';
-
-import * as planilhaController from '../controller/planilhaController.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { copyPlanilha } from '../service/googleSheetsService.js';
 
 const router = express.Router();
 
-router.use(authMiddleware);
-
-router.post('/', planilhaController.create);
-router.get('/:id', planilhaController.findById);
-router.get('/', planilhaController.findAll);
-router.patch('/:id', planilhaController.update);
-router.delete('/:id', planilhaController.remove);
+router.get('/copy', async (req, res) => {
+  try {
+    const novaPlanilha = await copyPlanilha('1L7B5yld1YJg9PmduuE9O3u6YT-DrQE7G5USmQQia0sM', 'Cópia da Idade');
+    res.json({
+      sucesso: true,
+      novaPlanilha,
+    });
+  } catch (err) {
+    res.status(500).json({
+      sucesso: false,
+      erro: err.message,
+    });
+  }
+});
 
 export default router;

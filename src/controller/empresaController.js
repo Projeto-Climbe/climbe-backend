@@ -73,7 +73,11 @@ const uploadDocumento = async (req, res) => {
     const result = await uploadToMinio(req.file, empresaId, tipoDocumento);
     res.status(201).json({ message: 'Documento enviado com sucesso!', ...result });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao fazer upload do documento.', error: error.message });
+    console.error('Erro ao fazer upload do documento:', error);
+    res.status(500).json({
+      message: 'Erro ao fazer upload do documento.',
+      error: error.stack || error.message || String(error)
+    });
   }
 };
 

@@ -10,7 +10,7 @@ import prisma from '../utils/prismaClient.js';
 const createEmpresa = async (empresaData) => {
   const { cnpj } = empresaData;
 
-  const existingEmpresa = await prisma.empresas.findUnique({
+  const existingEmpresa = await prisma.empresa.findUnique({
     where: { cnpj },
   });
 
@@ -18,7 +18,7 @@ const createEmpresa = async (empresaData) => {
     throw new Error('O CNPJ informado já está cadastrado.');
   }
 
-  return prisma.empresas.create({
+  return prisma.empresa.create({
     data: empresaData,
   });
 };
@@ -28,7 +28,7 @@ const createEmpresa = async (empresaData) => {
  * @returns {Promise<Array<object>>} Uma lista de empresas.
  */
 const getAllEmpresas = async () => {
-  return prisma.empresas.findMany();
+  return prisma.empresa.findMany();
 };
 
 /**
@@ -37,7 +37,7 @@ const getAllEmpresas = async () => {
  * @returns {Promise<object|null>} A empresa encontrada ou null.
  */
 const getEmpresaById = async (id) => {
-  return prisma.empresas.findUnique({
+  return prisma.empresa.findUnique({
     where: { id_empresa: id },
   });
 };
@@ -50,7 +50,7 @@ const getEmpresaById = async (id) => {
  */
 const updateEmpresa = async (id, empresaData) => {
   // Opcional: Adicionar verificação de CNPJ duplicado se o CNPJ for alterado.
-  return prisma.empresas.update({
+  return prisma.empresa.update({
     where: { id_empresa: id },
     data: empresaData,
   });

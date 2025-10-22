@@ -68,7 +68,7 @@ CREATE TABLE `Empresa` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `services` (
+CREATE TABLE `Service` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
 
@@ -140,6 +140,38 @@ CREATE TABLE `participantes_reuniao` (
     PRIMARY KEY (`id_reuniao`, `id_usuario`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Planilha` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_contrato` INTEGER NOT NULL,
+    `url_google_sheets` VARCHAR(255) NULL,
+    `blocked` BOOLEAN NOT NULL,
+    `view_permission` VARCHAR(255) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Document` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_empresa` INTEGER NOT NULL,
+    `type` VARCHAR(255) NOT NULL,
+    `url` VARCHAR(255) NOT NULL,
+    `validated` BOOLEAN NOT NULL DEFAULT false,
+    `analystId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CompanyService` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_empresa` INTEGER NOT NULL,
+    `id_service` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -172,3 +204,18 @@ ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_usu
 
 -- AddForeignKey
 ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Planilha` ADD CONSTRAINT `Planilha_id_contrato_fkey` FOREIGN KEY (`id_contrato`) REFERENCES `contratos`(`id_contrato`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Document` ADD CONSTRAINT `Document_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Document` ADD CONSTRAINT `Document_analystId_fkey` FOREIGN KEY (`analystId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CompanyService` ADD CONSTRAINT `CompanyService_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CompanyService` ADD CONSTRAINT `CompanyService_id_service_fkey` FOREIGN KEY (`id_service`) REFERENCES `Service`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

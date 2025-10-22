@@ -1,0 +1,155 @@
+tags:
+  - name: Representantes
+    description: Gerenciamento de representantes
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Representante:
+      type: object
+      required:
+        - nome_legal
+        - cpf
+        - empresa_id
+      properties:
+        id_representante:
+          type: integer
+          description: O ID auto-gerado do representante.
+        nome_legal:
+          type: string
+          description: Nome legal do representante.
+        cpf:
+          type: string
+          description: CPF do representante (campo único).
+        rg:
+          type: string
+          description: RG do representante.
+        endereco:
+          type: string
+          description: Endereço completo do representante.
+        cidade:
+          type: string
+          description: Cidade de residência.
+        estado:
+          type: string
+          description: Estado de residência.
+        empresa_id:
+          type: integer
+          description: ID da Empresa a que o representante está vinculado.
+      
+      example:
+        nome_legal: "Ana Silva Costa"
+        cpf: "123.456.789-00"
+        rg: "12.345.678-9"
+        endereco: "Rua do Tapa, 244"
+        cidade: "Sergipe"
+        estado: "SE"
+        empresa_id: 42
+        
+paths:
+  /representante:
+    post:
+      summary: Cria um novo representante
+      tags: [Representantes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Representante'
+      responses:
+        '201':
+          description: Representante criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Representante'
+        '400':
+          description: 'Erro na requisição (ex: CPF duplicado).'
+    get:
+      summary: Retorna a lista de todos os representantes
+      tags: [Representantes]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de representantes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Representante'
+
+  /representante/{id}:
+    get:
+      summary: Busca um representante pelo ID
+      tags: [Representantes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: O ID do representante
+      responses:
+        '200':
+          description: Dados do representante.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Representante'
+        '404':
+          description: Representante não encontrado.
+    put:
+      summary: Atualiza um representante pelo ID
+      tags: [Representantes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: O ID do representante
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Representante'
+      responses:
+        '200':
+          description: Representante atualizado com sucesso.
+        '404':
+          description: Representante não encontrado.
+        '400':
+          description: Erro na requisição.
+    delete:
+      summary: Deleta um representante pelo ID
+      tags: [Representantes]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: O ID do representante
+      responses:
+        '204':
+          description: Representante deletado com sucesso (No Content).
+        '404':
+          description: Representante não encontrado.

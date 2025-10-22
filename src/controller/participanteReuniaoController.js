@@ -1,4 +1,4 @@
-import participanteService from '../service/participanteReuniao.service.js';
+import participanteService from '../service/participanteReuniaoService.js';
 
 const add = async (req, res) => {
   try {

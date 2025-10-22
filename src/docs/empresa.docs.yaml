@@ -1,3 +1,7 @@
+tags:
+  - name: Empresas
+    description: Gerenciamento de empresas
+
 components:
   securitySchemes:
     bearerAuth:

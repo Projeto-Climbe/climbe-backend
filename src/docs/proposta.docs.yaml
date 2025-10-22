@@ -1,6 +1,6 @@
-# tags:
-#   - name: Contratos
-#     description: "API para gerenciamento do ciclo de vida dos contratos."
+tags:
+  - name: Contratos
+    description: "Gerenciamento do ciclo de vida dos contratos."
 
 # components:
 #   # O schema de segurança é geralmente definido apenas uma vez no arquivo principal,

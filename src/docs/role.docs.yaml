@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
-  title: API - Sistema de Permissões
+  title: API - Sistema de Cargos
   version: 1.0.0
-  description: Documentação de Permissões
+  description: Documentação de Cargos (Roles)
 servers:
   - url: http://localhost:3000/api
     description: Servidor local
 
 tags:
-  - name: Permissões
-    description: Operações relacionadas ao gerenciamento de permissões
+  - name: Cargos
+    description: Operações relacionadas ao gerenciamento de cargos
 
 components:
   securitySchemes:
@@ -19,43 +19,43 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Permission:
+    Role:
       type: object
       required:
-        - description
+        - name
       properties:
         id:
           type: integer
           example: 1
-        description:
+        name:
           type: string
-          example: Pode criar usuários
+          example: Administrador
 
-    PermissionCreate:
+    RoleCreate:
       type: object
       required:
-        - description
+        - name
       properties:
-        description:
+        name:
           type: string
-          example: Pode criar usuários
+          example: Administrador
 
-    PermissionUpdate:
+    RoleUpdate:
       type: object
       required:
-        - description
+        - name
       properties:
-        description:
+        name:
           type: string
-          example: Pode editar relatórios
+          example: Usuário Padrão
 
-    PermissionList:
+    RoleList:
       type: object
       properties:
-        permissions:
+        roles:
           type: array
           items:
-            $ref: '#/components/schemas/Permission'
+            $ref: '#/components/schemas/Role'
 
     ApiResponseError:
       type: object
@@ -64,11 +64,21 @@ components:
           type: string
           example: Mensagem de erro
 
+    ApiResponseSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Cargo atualizado com sucesso
+
 paths:
-  /permission:
+  /roles:
     post:
-      summary: Cria uma nova permissão
-      tags: [Permissões]
+      summary: Cria um novo cargo
+      tags: [Cargos]
       security:
         - bearerAuth: []
       requestBody:
@@ -76,14 +86,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionCreate'
+              $ref: '#/components/schemas/RoleCreate'
       responses:
         "201":
-          description: Permissão criada com sucesso
+          description: Cargo criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/Role'
         "400":
           description: Erro de validação
           content:
@@ -94,30 +104,30 @@ paths:
           description: Token não fornecido ou inválido
 
     get:
-      summary: Lista todas as permissões
-      tags: [Permissões]
+      summary: Lista todos os cargos
+      tags: [Cargos]
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Lista de permissões cadastradas
+          description: Lista de cargos cadastrados
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionList'
+                $ref: '#/components/schemas/RoleList'
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Nenhuma permissão encontrada
+          description: Nenhum cargo encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
-  /permission/{id}:
+  /roles/{id}:
     get:
-      summary: Busca permissão pelo ID
-      tags: [Permissões]
+      summary: Busca cargo pelo ID
+      tags: [Cargos]
       security:
         - bearerAuth: []
       parameters:
@@ -126,17 +136,17 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do cargo
       responses:
         "200":
-          description: Permissão encontrada
+          description: Cargo encontrado
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  permission:
-                    $ref: '#/components/schemas/Permission'
+                  role:
+                    $ref: '#/components/schemas/Role'
         "400":
           description: ID inválido
           content:
@@ -146,15 +156,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Cargo não encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     patch:
-      summary: Atualiza uma permissão
-      tags: [Permissões]
+      summary: Atualiza um cargo
+      tags: [Cargos]
       security:
         - bearerAuth: []
       parameters:
@@ -163,20 +173,20 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do cargo
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PermissionUpdate'
+              $ref: '#/components/schemas/RoleUpdate'
       responses:
         "200":
-          description: Permissão atualizada com sucesso
+          description: Cargo atualizado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Permission'
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: Erro de validação
           content:
@@ -186,15 +196,15 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Cargo não encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseError'
 
     delete:
-      summary: Remove uma permissão
-      tags: [Permissões]
+      summary: Remove um cargo
+      tags: [Cargos]
       security:
         - bearerAuth: []
       parameters:
@@ -203,10 +213,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID da permissão
+          description: ID do cargo
       responses:
-        "204":
-          description: Permissão removida com sucesso
+        "200":
+          description: Cargo removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSuccess'
         "400":
           description: ID inválido
           content:
@@ -216,7 +230,7 @@ paths:
         "401":
           description: Token não fornecido ou inválido
         "404":
-          description: Permissão não encontrada
+          description: Cargo não encontrado
           content:
             application/json:
               schema:

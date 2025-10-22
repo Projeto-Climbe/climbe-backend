@@ -1,4 +1,16 @@
 -- CreateTable
+CREATE TABLE `PasswordResetToken` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `token` VARCHAR(191) NOT NULL,
+    `expiresAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `PasswordResetToken_userId_key`(`userId`),
+    UNIQUE INDEX `PasswordResetToken_token_key`(`token`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `User` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fullName` VARCHAR(191) NOT NULL,
@@ -9,9 +21,32 @@ CREATE TABLE `User` (
     `roleId` INTEGER NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `profilePicture` VARCHAR(191) NULL,
+    `oauthProvider` VARCHAR(191) NULL,
+    `oauthProviderId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
     UNIQUE INDEX `User_cpf_key`(`cpf`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `OAuthAccount` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `provider` VARCHAR(191) NOT NULL,
+    `providerUserId` VARCHAR(191) NOT NULL,
+    `accessToken` TEXT NOT NULL,
+    `refreshToken` TEXT NULL,
+    `scope` TEXT NULL,
+    `idToken` TEXT NULL,
+    `profilePicture` VARCHAR(191) NULL,
+    `rawProfile` JSON NULL,
+    `expiresAt` DATETIME(3) NULL,
+    `userId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `OAuthAccount_provider_providerUserId_key`(`provider`, `providerUserId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -56,15 +91,25 @@ CREATE TABLE `Empresa` (
     `cep` VARCHAR(30) NULL,
     `telefone` VARCHAR(20) NULL,
     `email` VARCHAR(255) NULL,
-    `representante_legal` VARCHAR(255) NULL,
-    `representante_cpf` VARCHAR(14) NULL,
-    `representante_rg` VARCHAR(20) NULL,
-    `representante_endereco` VARCHAR(255) NULL,
-    `representante_cidade` VARCHAR(255) NULL,
-    `representante_estado` VARCHAR(100) NULL,
 
     UNIQUE INDEX `cnpj`(`cnpj`),
     PRIMARY KEY (`id_empresa`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `representantes` (
+    `id_representante` INTEGER NOT NULL AUTO_INCREMENT,
+    `nome_legal` VARCHAR(255) NULL,
+    `cpf` VARCHAR(14) NULL,
+    `rg` VARCHAR(20) NULL,
+    `endereco` VARCHAR(255) NULL,
+    `cidade` VARCHAR(255) NULL,
+    `estado` VARCHAR(100) NULL,
+    `empresa_id` INTEGER NOT NULL,
+
+    UNIQUE INDEX `representantes_cpf_key`(`cpf`),
+    UNIQUE INDEX `representantes_empresa_id_key`(`empresa_id`),
+    PRIMARY KEY (`id_representante`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -100,6 +145,7 @@ CREATE TABLE `relatorios` (
 CREATE TABLE `propostas` (
     `id_proposta` INTEGER NOT NULL AUTO_INCREMENT,
     `empresa_id` INTEGER NOT NULL,
+    `usuario_id` INTEGER NULL,
     `status` VARCHAR(50) NULL,
     `data_criacao` DATE NULL,
 
@@ -123,12 +169,26 @@ CREATE TABLE `reunioes` (
     `empresa_id` INTEGER NOT NULL,
     `data` DATE NULL,
     `hora` VARCHAR(191) NULL,
+    `horaFim` VARCHAR(191) NULL,
+    `durationMinutes` INTEGER NULL,
     `presencial` BOOLEAN NULL,
     `local` VARCHAR(255) NULL,
+    `roomId` INTEGER NULL,
+    `contratoId` INTEGER NULL,
     `pauta` TEXT NULL,
     `status` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id_reuniao`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `meeting_rooms` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `location` VARCHAR(255) NULL,
+    `capacity` INTEGER NULL,
+
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -173,13 +233,22 @@ CREATE TABLE `CompanyService` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `PasswordResetToken` ADD CONSTRAINT `PasswordResetToken_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `OAuthAccount` ADD CONSTRAINT `OAuthAccount_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_permissionId_fkey` FOREIGN KEY (`permissionId`) REFERENCES `Permission`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `representantes` ADD CONSTRAINT `representantes_empresa_id_fkey` FOREIGN KEY (`empresa_id`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `contratos` ADD CONSTRAINT `contratos_id_proposta_fkey` FOREIGN KEY (`id_proposta`) REFERENCES `propostas`(`id_proposta`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -191,10 +260,19 @@ ALTER TABLE `relatorios` ADD CONSTRAINT `relatorios_contrato_id_fkey` FOREIGN KE
 ALTER TABLE `propostas` ADD CONSTRAINT `propostas_empresa_id_fkey` FOREIGN KEY (`empresa_id`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `propostas` ADD CONSTRAINT `propostas_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reunioes` ADD CONSTRAINT `reunioes_empresa_id_fkey` FOREIGN KEY (`empresa_id`) REFERENCES `Empresa`(`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `reunioes` ADD CONSTRAINT `reunioes_roomId_fkey` FOREIGN KEY (`roomId`) REFERENCES `meeting_rooms`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `reunioes` ADD CONSTRAINT `reunioes_contratoId_fkey` FOREIGN KEY (`contratoId`) REFERENCES `contratos`(`id_contrato`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `participantes_reuniao` ADD CONSTRAINT `participantes_reuniao_id_reuniao_fkey` FOREIGN KEY (`id_reuniao`) REFERENCES `reunioes`(`id_reuniao`) ON DELETE RESTRICT ON UPDATE CASCADE;

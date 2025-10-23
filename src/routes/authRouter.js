@@ -12,7 +12,7 @@ router.post('/reset-password', userController.resetPassword);
 router.post('/signup', userController.singup);
 router.post('/login', userController.login);
 
-router.get('/auth/google', authController.googleAuth);
-router.get('/auth/google/callback', authController.googleCallback)
+router.get('/google', authController.googleAuth);
+router.get('/google/callback', authController.googleCallback)
 
 export default router;

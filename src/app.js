@@ -5,6 +5,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 
 // --- Rotas ---
 import userRouter from './routes/userRouter.js';
+import authRouter from './routes/authRouter.js';
 import empresaRouter from './routes/empresaRouter.js';
 import roleRouter from './routes/roleRouter.js';
 import permissionRouter from './routes/permissionRouter.js';
@@ -41,6 +42,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // --- Rotas ---
 app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/empresa', empresaRouter);
 app.use('/api/role', roleRouter);
 app.use('/api/permission', permissionRouter);

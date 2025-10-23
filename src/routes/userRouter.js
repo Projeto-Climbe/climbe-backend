@@ -10,6 +10,8 @@ router.use(authMiddleware);
 
 // Troca de senha autenticado
 router.patch('/change-password', userController.changePassword);
+router.post('/request-password-reset', userController.requestPasswordReset);
+router.post('/reset-password', userController.resetPassword);
 
 router.post('/email', userController.getUserByEmail);
 

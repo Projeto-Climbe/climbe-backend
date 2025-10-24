@@ -52,7 +52,7 @@ app.use('/api/notifications', notificationsRouter);
 app.use('/api/contract', contractRouter);
 app.use('/api/meeting', reuniaoRouter);
 app.use('/api/participante-reuniao', participanteReuniaoRouter);
-app.use('/api/proposta', propostaRouter);
+app.use('/api/proposal', propostaRouter);
 app.use('/api/document', documentRouter);
 app.use('/api/relatorio', relatorioRouter);
 app.use('/api/planilha', planilhaRouter);

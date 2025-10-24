@@ -154,7 +154,7 @@ paths:
                 $ref: '#/components/schemas/ReuniaoResponse'
         '404':
           description: "Reunião não encontrada."
-    put:
+    patch:
       summary: Atualiza os dados de uma reunião existente
       tags: [Reuniões]
       security:

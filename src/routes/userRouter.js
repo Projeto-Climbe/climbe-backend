@@ -6,9 +6,9 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.patch('/change-password', userController.changePassword);
+router.patch('/change-password', authMiddleware, userController.changePassword);
 router.post('/request-password-reset', userController.requestPasswordReset);
-router.post('/reset-password', authMiddleware, userController.resetPassword);
+router.post('/reset-password', userController.resetPassword);
 
 router.post('/email', authMiddleware, userController.getUserByEmail);
 

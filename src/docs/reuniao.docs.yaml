@@ -97,7 +97,7 @@ components:
                 type: integer
 
 paths:
-  /meetings:
+  /meeting:
     post:
       summary: Agenda uma nova reunião
       tags: [Reuniões]
@@ -132,7 +132,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ReuniaoResponse'
-  /meetings/{id}:
+  /meeting/{id}:
     get:
       summary: Busca uma reunião pelo ID
       tags: [Reuniões]

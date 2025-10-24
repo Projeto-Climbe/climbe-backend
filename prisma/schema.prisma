@@ -5,6 +5,15 @@ model PasswordResetToken {
   expiresAt DateTime
   user      User    @relation(fields: [userId], references: [id])
 }
+
+enum ProposalStatus {
+  pendente
+  aceita
+  rejeitada
+  cancelada
+  em_analise
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -164,7 +173,7 @@ model Propostas {
   id_proposta  Int       @id @default(autoincrement())
   empresa_id   Int
   usuario_id   Int?
-  status       String?   @db.VarChar(50)
+  status       ProposalStatus? @default(pendente)
   data_criacao DateTime? @db.Date
 
   // Relacionamentos

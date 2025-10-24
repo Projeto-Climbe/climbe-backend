@@ -231,7 +231,7 @@ model ParticipantesReuniao {
   id_usuario Int
   id_empresa Int
 
-  reunioes Reunioes @relation(fields: [id_reuniao], references: [id_reuniao])
+  reunioes Reunioes @relation(fields: [id_reuniao], references: [id_reuniao], onDelete: Cascade)
 
   usuarios User @relation(fields: [id_usuario], references: [id]) // Assumindo que 'User' é o nome do seu modelo de usuários
 

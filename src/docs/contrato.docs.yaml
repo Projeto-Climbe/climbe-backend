@@ -97,7 +97,7 @@ paths:
                 $ref: '#/components/schemas/Contrato'
         '404':
           description: "Contrato não encontrado."
-    put:
+    patch:
       summary: Atualiza um contrato pelo ID
       tags: [Contratos]
       security:

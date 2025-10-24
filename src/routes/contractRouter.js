@@ -8,7 +8,7 @@ router.use(authMiddleware);
 router.post('/', contratoController.post);
 router.get('/', contratoController.getAll);
 router.get('/:id', contratoController.get);
-router.put('/:id', contratoController.patch);
+router.patch('/:id', contratoController.patch);
 router.delete('/:id', contratoController.delete);
 
 export default router;

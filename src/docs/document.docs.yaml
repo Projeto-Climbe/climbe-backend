@@ -105,6 +105,48 @@ components:
           example: Mensagem de erro
 
 paths:
+  /document/upload/{id}:
+    post:
+      summary: Faz upload de um arquivo de documento
+      tags: [Documentos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do documento ao qual o arquivo será associado
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Arquivo do documento a ser enviado
+      responses:
+        "200":
+          description: Upload realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    example: https://meu-bucket.s3.amazonaws.com/documentos/arquivo.pdf
+        "400":
+          description: Erro no upload do arquivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+
   /document:
     post:
       summary: Cria um novo documento

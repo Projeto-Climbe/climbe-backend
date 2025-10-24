@@ -9,6 +9,19 @@ export async function create(req, res) {
   }
 }
 
+export async function uploadFile(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) throw new Error('ID inválido.');
+    const file = req.file;
+    if (!file) throw new Error('Arquivo não enviado.');
+    const result = await documentService.uploadFile(id, file);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function findAll(req, res) {
   try {
     const documents = await documentService.findAll();

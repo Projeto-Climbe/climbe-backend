@@ -1,3 +1,4 @@
+import { validate } from 'uuid';
 import prisma from '../utils/prismaClient.js';
 
 /**
@@ -18,9 +19,22 @@ const createEmpresa = async (empresaData) => {
     throw new Error('O CNPJ informado já está cadastrado.');
   }
 
-  return prisma.empresa.create({
+  const empresa = await prisma.empresa.create({
     data: empresaData,
   });
+
+  const requiredDocumentsTypes = ['balanco','dre','gerenciais','cnpj','contrato_social']
+  await prisma.document.createMany({
+    data: requiredDocumentsTypes.map(type => ({
+      id_empresa: empresa.id_empresa,
+      type,
+      url: "",
+      validated: false,
+      analystId: null
+    }))
+  })
+
+  return empresa;
 };
 
 /**

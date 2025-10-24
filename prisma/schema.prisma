@@ -1,9 +1,9 @@
 model PasswordResetToken {
   id        Int      @id @default(autoincrement())
-  userId    Int     @unique
-  token     String  @unique
+  userId    Int      @unique
+  token     String   @unique
   expiresAt DateTime
-  user      User    @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum ProposalStatus {
@@ -12,6 +12,14 @@ enum ProposalStatus {
   rejeitada
   cancelada
   em_analise
+}
+
+enum DocumentType {
+  balanco
+  dre
+  gerenciais
+  cnpj
+  contrato_social
 }
 
 generator client {
@@ -24,50 +32,48 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  fullName  String
-  email     String   @unique
-  cpf       String   @unique
-  phone     String
-  password  String
-  roleId    Int?
-  status    String   @default("pending")
-  createdAt DateTime @default(now())
-  profilePicture String?
-  oauthProvider  String?
+  id              Int      @id @default(autoincrement())
+  fullName        String
+  email           String   @unique
+  cpf             String   @unique
+  phone           String
+  password        String
+  roleId          Int?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+  profilePicture  String?
+  oauthProvider   String?
   oauthProviderId String?
 
-  role Role? @relation(fields: [roleId], references: [id])
+  role Role? @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
-  permissions   UserPermission[]
-  notifications notifications[]
-  document      Document[]
-  participacoes ParticipantesReuniao[]
-  oauthAccounts OAuthAccount[]
-  propostas     Propostas[]
+  permissions        UserPermission[]
+  notifications      notifications[]
+  document           Document[]
+  participacoes      ParticipantesReuniao[]
+  oauthAccounts      OAuthAccount[]
+  propostas          Propostas[]
   passwordResetToken PasswordResetToken?
 }
 
-
 model OAuthAccount {
-  id             Int      @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   provider       String
   providerUserId String
-  accessToken    String   @db.Text
-  refreshToken   String?  @db.Text
-  scope          String?  @db.Text
-  idToken        String?  @db.Text
+  accessToken    String    @db.Text
+  refreshToken   String?   @db.Text
+  scope          String?   @db.Text
+  idToken        String?   @db.Text
   profilePicture String?
   rawProfile     Json?
   expiresAt      DateTime?
   userId         Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerUserId])
-
 }
 
 model Role {
@@ -96,42 +102,41 @@ model UserPermission {
 }
 
 model Empresa {
-  id_empresa                 Int       @id @default(autoincrement())
-  nome_fantasia              String    @db.VarChar(255)
-  razao_social               String    @db.VarChar(255)
-  cnpj                       String    @unique(map: "cnpj") @db.VarChar(18)
-  inscricao_estadual         String?   @db.VarChar(50)
-  endereco                   String?   @db.VarChar(255)
-  cidade                     String?   @db.VarChar(255)
-  estado                     String?   @db.VarChar(100)
-  cep                        String?   @db.VarChar(30)
-  telefone                   String?   @db.VarChar(20)
-  email                      String?   @db.VarChar(255)
+  id_empresa         Int     @id @default(autoincrement())
+  nome_fantasia      String  @db.VarChar(255)
+  razao_social       String  @db.VarChar(255)
+  cnpj               String  @unique(map: "cnpj") @db.VarChar(18)
+  inscricao_estadual String? @db.VarChar(50)
+  endereco           String? @db.VarChar(255)
+  cidade             String? @db.VarChar(255)
+  estado             String? @db.VarChar(100)
+  cep                String? @db.VarChar(30)
+  telefone           String? @db.VarChar(20)
+  email              String? @db.VarChar(255)
 
-  Representante              Representante? 
+  Representante Representante?
 
-  reunioes                   Reunioes[]
-  Propostas                  Propostas[]
-  ParticipantesReuniao       ParticipantesReuniao[]
-  document                   Document[]
-  companyService             CompanyService[]
+  reunioes             Reunioes[]
+  Propostas            Propostas[]
+  ParticipantesReuniao ParticipantesReuniao[]
+  document             Document[]
+  companyService       CompanyService[]
 }
 
 model Representante {
-  id_representante     Int      @id @default(autoincrement())
-  nome_legal           String?  @db.VarChar(255) 
-  cpf                  String?  @unique @db.VarChar(14) 
-  rg                   String?  @db.VarChar(20)
-  endereco             String?  @db.VarChar(255)
-  cidade               String?  @db.VarChar(255)
-  estado               String?  @db.VarChar(100)
+  id_representante Int     @id @default(autoincrement())
+  nome_legal       String? @db.VarChar(255)
+  cpf              String? @unique @db.VarChar(14)
+  rg               String? @db.VarChar(20)
+  endereco         String? @db.VarChar(255)
+  cidade           String? @db.VarChar(255)
+  estado           String? @db.VarChar(100)
 
-  empresa_id           Int      @unique 
-  empresa              Empresa  @relation(fields: [empresa_id], references: [id_empresa])
-  
+  empresa_id Int     @unique
+  empresa    Empresa @relation(fields: [empresa_id], references: [id_empresa], onDelete: Cascade)
+
   @@map("representantes")
 }
-
 
 model Service {
   id   Int    @id @default(autoincrement())
@@ -147,14 +152,13 @@ model Contratos {
   data_fim    DateTime? @db.Date
   status      String?
 
-  proposta   Propostas    @relation(fields: [id_proposta], references: [id_proposta])
+  proposta Propostas @relation(fields: [id_proposta], references: [id_proposta], onDelete: Cascade)
 
   relatorios Relatorios[]
-  planilha Planilha[]
-
-  @@map("contratos")
+  planilha   Planilha[]
   reunioes   Reunioes[]
 
+  @@map("contratos")
 }
 
 // Modelo de Relatorios
@@ -170,21 +174,19 @@ model Relatorios {
 }
 
 model Propostas {
-  id_proposta  Int       @id @default(autoincrement())
+  id_proposta  Int             @id @default(autoincrement())
   empresa_id   Int
   usuario_id   Int?
   status       ProposalStatus? @default(pendente)
-  data_criacao DateTime? @db.Date
+  data_criacao DateTime?       @db.Date
 
   // Relacionamentos
-  empresa  Empresa  @relation(fields: [empresa_id], references: [id_empresa])
-  usuario  User?    @relation(fields: [usuario_id], references: [id])
+  empresa   Empresa     @relation(fields: [empresa_id], references: [id_empresa], onDelete: Cascade)
+  usuario   User?       @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
   contratos Contratos[]
 
   @@map("propostas")
 }
-
-
 
 model notifications {
   id        Int      @id @default(autoincrement())
@@ -193,7 +195,7 @@ model notifications {
   createdAt DateTime @default(now())
 
   // Relacionamento com User
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
@@ -214,7 +216,7 @@ model Reunioes {
   pauta           String?   @db.Text
   status          String?
 
-  empresa  Empresa     @relation(fields: [empresa_id], references: [id_empresa])
+  empresa  Empresa      @relation(fields: [empresa_id], references: [id_empresa], onDelete: Cascade)
   room     MeetingRoom? @relation(fields: [roomId], references: [id])
   contrato Contratos?   @relation(fields: [contratoId], references: [id_contrato])
 
@@ -223,14 +225,12 @@ model Reunioes {
   @@map("reunioes")
 }
 
-
-
 model MeetingRoom {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(255)
-  location  String?  @db.VarChar(255)
-  capacity  Int?
-  reunioes  Reunioes[]
+  id       Int        @id @default(autoincrement())
+  name     String     @db.VarChar(255)
+  location String?    @db.VarChar(255)
+  capacity Int?
+  reunioes Reunioes[]
 
   @@map("meeting_rooms")
 }
@@ -242,41 +242,41 @@ model ParticipantesReuniao {
 
   reunioes Reunioes @relation(fields: [id_reuniao], references: [id_reuniao], onDelete: Cascade)
 
-  usuarios User @relation(fields: [id_usuario], references: [id]) // Assumindo que 'User' é o nome do seu modelo de usuários
+  usuarios User @relation(fields: [id_usuario], references: [id], onDelete: Cascade) // Assumindo que 'User' é o nome do seu modelo de usuários
 
-  empresa Empresa @relation(fields: [id_empresa], references: [id_empresa])
+  empresa Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade)
 
   @@id([id_reuniao, id_usuario])
   @@map("participantes_reuniao")
 }
 
 model Planilha {
-  id      Int       @id @default(autoincrement())
+  id                Int     @id @default(autoincrement())
   id_contrato       Int
-  url_google_sheets String?   @db.VarChar(255)
+  url_google_sheets String? @db.VarChar(255)
   blocked           Boolean
-  view_permission   String?   @db.VarChar(255)
+  view_permission   String? @db.VarChar(255)
 
-  contrato Contratos @relation(fields: [id_contrato], references: [id_contrato])
-  }
+  contrato Contratos @relation(fields: [id_contrato], references: [id_contrato], onDelete: Cascade)
+}
 
 model Document {
-  id          Int      @id @default(autoincrement())
-  id_empresa  Int
-  type        String   @db.VarChar(255)
-  url         String   @db.VarChar(255)
-  validated   Boolean  @default(false) // na modelagem esse campo é VARCVHAR(5), mas faz mais sentido ser Boolean
-  analystId   Int
+  id         Int          @id @default(autoincrement())
+  id_empresa Int
+  type       DocumentType
+  url        String       @db.VarChar(255)
+  validated  Boolean      @default(false) // na modelagem esse campo é VARCVHAR(5), mas faz mais sentido ser Boolean
+  analystId  Int?         
 
-  empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])
-  id_analyst     User     @relation(fields: [analystId], references: [id])
+  empresa    Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade)
+  id_analyst User?    @relation(fields: [analystId], references: [id])
 }
 
 model CompanyService {
-  id          Int      @id @default(autoincrement()) 
-  id_empresa  Int
-  id_service  Int
+  id         Int @id @default(autoincrement())
+  id_empresa Int
+  id_service Int
 
-  empresa     Empresa @relation(fields: [id_empresa], references: [id_empresa])
-  service     Service @relation(fields: [id_service], references: [id])
+  empresa Empresa @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade)
+  service Service @relation(fields: [id_service], references: [id])
 }

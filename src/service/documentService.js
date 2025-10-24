@@ -1,4 +1,5 @@
 import { documentModel } from "../model/documentModel.js";
+import { uploadToMinio } from '../storage/minioUpload.js';
 
 async function create(data) {
     if (!data) {
@@ -11,6 +12,50 @@ async function create(data) {
     }
 
     return await documentModel.save(data);
+}
+
+// Faz upload do arquivo no MinIO e atualiza o registro do documento
+async function uploadFile(id, file) {
+    try {
+        if (!file) {
+            console.error('[UploadFile] Nenhum arquivo enviado.');
+            throw new Error('Arquivo não enviado.');
+        }
+        const document = await documentModel.findById(id);
+        if (!document) {
+            console.error(`[UploadFile] Documento não encontrado para id: ${id}`);
+            throw new Error('Documento não encontrado.');
+        }
+
+        // Faz upload no MinIO
+        let minioResult;
+        try {
+            minioResult = await uploadToMinio(file, document.id_empresa, document.type);
+        } catch (err) {
+            console.error('[UploadFile] Erro ao fazer upload no MinIO:', err);
+            throw new Error('Falha ao fazer upload do arquivo no MinIO.');
+        }
+
+        // Atualiza o registro do documento com a URL e marca como não validado
+        try {
+            await documentModel.update(id, {
+                url: minioResult.url,
+                validated: false
+            });
+        } catch (err) {
+            console.error('[UploadFile] Erro ao atualizar registro do documento:', err);
+            throw new Error('Falha ao atualizar o documento após upload.');
+        }
+
+        return {
+            success: true,
+            url: minioResult.url,
+            documentId: id
+        };
+    } catch (err) {
+        console.error('[UploadFile] Erro geral:', err);
+        throw err;
+    }
 }
 
 async function findById(id) {
@@ -52,5 +97,6 @@ export const documentService = {
     findById,
     findAll,
     update,
-    remove
+    remove,
+    uploadFile
 };

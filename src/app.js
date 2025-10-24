@@ -50,7 +50,7 @@ app.use('/api/user-permission', userPermissionRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/contract', contractRouter);
-app.use('/api/reuniao', reuniaoRouter);
+app.use('/api/meeting', reuniaoRouter);
 app.use('/api/participante-reuniao', participanteReuniaoRouter);
 app.use('/api/proposta', propostaRouter);
 app.use('/api/document', documentRouter);

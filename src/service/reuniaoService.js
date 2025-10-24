@@ -1,4 +1,10 @@
 import reuniaoModel from '../model/reuniaoModel.js';
+import meetingRoomModel from '../model/meetingRoomModel.js';
+import contratoModel from '../model/contractModel.js';
+import participanteReuniaoModel from '../model/participanteReuniaoModel.js';
+import userModel from '../model/userModel.js';
+import notificationsService from './notificationsService.js';
+import sendMeetingScheduledEmail from '../mailer.js';
 
 const DEFAULT_DURATION_MINUTES = 60;
 

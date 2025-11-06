@@ -54,7 +54,7 @@ app.use('/api/meeting', reuniaoRouter);
 app.use('/api/participante-reuniao', participanteReuniaoRouter);
 app.use('/api/proposal', propostaRouter);
 app.use('/api/document', documentRouter);
-app.use('/api/relatorio', relatorioRouter);
+app.use('/api/report', relatorioRouter);
 app.use('/api/planilha', planilhaRouter);
 app.use('/api/calendar', calendarRouter);
 

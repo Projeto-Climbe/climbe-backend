@@ -31,10 +31,21 @@ const deleteRelatorio = async (id) => {
   return relatorioModel.remove(id);
 };
 
+async function updateRelatorio(id, data) {
+    const relatorio = await relatorioModel.findById(id);
+    if (!relatorio) throw new Error('Id não encontrado.');
+
+    if (!data) throw new Error('Dados para atualização são obrigatórios.');
+
+    await relatorioModel.update(id, data);
+    return { success: true, message: `Relatório atualizado com sucesso.` };
+}
+
 export default {
   createRelatorio,
   getRelatorioById,
   getRelatoriosByContratoId,
   getAllRelatorios,
+  updateRelatorio,
   deleteRelatorio,
 };

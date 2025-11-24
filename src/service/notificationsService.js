@@ -1,6 +1,14 @@
 import { notificationsModel } from '../model/notificationsModel.js';
+import { userModel } from '../model/userModel.js';
 
 async function create(data) {
+
+  const userId = await userModel.findById(data.userId);
+  if (!userId) {
+    throw new Error('Usuário não encontrado para o userId fornecido.');
+  }
+
+
   if (!data?.userId || !data?.message) {
     throw new Error('userId e message são obrigatórios.');
   }

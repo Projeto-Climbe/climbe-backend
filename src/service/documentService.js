@@ -2,16 +2,21 @@ import { documentModel } from "../model/documentModel.js";
 import { uploadToMinio } from '../storage/minioUpload.js';
 
 async function create(data) {
-    if (!data) {
-        throw new Error('Os dados precisam ser preenchidos.');
-    }
+  if (!data) {
+    throw new Error('Os dados precisam ser preenchidos.');
+  }
 
-    const isAnalyst = await documentModel.isAnalyst(data.analystId);
-    if (!isAnalyst || isAnalyst.role !== 'Analista') {
-        throw new Error('Apenas analistas podem criar documentos! Esse usuário não é analista.');
-    }
+  const analyst = await documentModel.isAnalyst(Number(data.analystId));
+  if (!analyst) {
+    throw new Error('Usuário não encontrado.');
+  }
 
-    return await documentModel.save(data);
+  const roleName = analyst.role?.name?.toLowerCase?.() || '';
+  if (!roleName.includes('analista')) {
+    throw new Error('Apenas analistas podem criar documentos! Esse usuário não é analista.');
+  }
+
+  return await documentModel.save(data);
 }
 
 // Faz upload do arquivo no MinIO e atualiza o registro do documento

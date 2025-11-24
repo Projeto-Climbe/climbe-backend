@@ -4,7 +4,7 @@ const createRelatorio = async (relatorioData) => {
   if (!relatorioData.contrato_id || !relatorioData.url_pdf) {
     throw new Error('ID do contrato e URL do PDF são obrigatórios para criar um relatório.');
   }
-  return relatorioModel.create(relatorioData);
+  return await relatorioModel.create(relatorioData);
 };
 
 const getRelatorioById = async (id) => {
@@ -16,7 +16,7 @@ const getRelatorioById = async (id) => {
 };
 
 const getRelatoriosByContratoId = async (contratoId) => {
-  return relatorioModel.findByContratoId(contratoId);
+  return await relatorioModel.findByContratoId(contratoId);
 };
 
 const getAllRelatorios = async () => {
@@ -31,10 +31,21 @@ const deleteRelatorio = async (id) => {
   return relatorioModel.remove(id);
 };
 
+async function updateRelatorio(id, data) {
+    const relatorio = await relatorioModel.findById(id);
+    if (!relatorio) throw new Error('Id não encontrado.');
+
+    if (!data) throw new Error('Dados para atualização são obrigatórios.');
+
+    await relatorioModel.update(id, data);
+    return { success: true, message: `Relatório atualizado com sucesso.` };
+}
+
 export default {
   createRelatorio,
   getRelatorioById,
   getRelatoriosByContratoId,
   getAllRelatorios,
+  updateRelatorio,
   deleteRelatorio,
 };

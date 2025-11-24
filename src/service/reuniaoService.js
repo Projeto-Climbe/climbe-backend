@@ -139,6 +139,10 @@ async function agendarReuniao(reuniaoData = {}, organizerId) {
     throw new Error('Data inválida.');
   }
 
+  if (presencial === true && !roomId) {
+  throw new Error('O ID da sala (roomId) é obrigatório para reuniões presenciais.');
+}
+
   const participantIdsRaw = Array.isArray(participantes) ? participantes.map(Number).filter(Boolean) : [];
 
   if (!participantIdsRaw.length) {

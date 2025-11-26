@@ -20,6 +20,13 @@ const findAll = async () => {
   return prisma.relatorios.findMany();
 };
 
+const update = async (id, data) => {
+  return prisma.relatorios.update({
+    where: { id_relatorio: id },
+    data,
+  });
+}
+
 const remove = async (id) => {
   return prisma.relatorios.delete({
     where: { id_relatorio: id },
@@ -31,5 +38,6 @@ export default {
   findById,
   findByContratoId,
   findAll,
+  update,
   remove,
 };

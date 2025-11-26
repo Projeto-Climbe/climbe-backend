@@ -38,6 +38,19 @@ const getAll = async (req, res) => {
   }
 };
 
+export async function update(req, res) {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) throw new Error('ID inválido.');
+
+    const result = await relatorioService.updateRelatorio(id, req.body);
+    res.json(result);
+  } catch (error) {
+    const status = error.message.includes('não encontrado') ? 404 : 400;
+    res.status(status).json({ error: error.message });
+  }
+}
+
 const remove = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -53,5 +66,6 @@ export default {
   getById,
   getByContratoId,
   getAll,
+  update,
   remove,
 };

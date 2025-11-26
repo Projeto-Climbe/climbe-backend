@@ -166,7 +166,7 @@ model Relatorios {
   id_relatorio Int       @id @default(autoincrement())
   contrato_id  Int
   url_pdf      String
-  data_envio   DateTime? @db.Date
+  data_envio   DateTime @default(now())
 
   contrato Contratos @relation(fields: [contrato_id], references: [id_contrato])
 

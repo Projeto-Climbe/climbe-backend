@@ -9,6 +9,7 @@ router.post('/', relatorioController.create);
 router.get('/', relatorioController.getAll);
 router.get('/contrato/:contratoId', relatorioController.getByContratoId);
 router.get('/:id', relatorioController.getById);
+router.patch('/:id', relatorioController.update);
 router.delete('/:id', relatorioController.remove);
 
 export default router;

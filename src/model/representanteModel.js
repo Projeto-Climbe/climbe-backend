@@ -10,6 +10,10 @@ const findById = async (id) => {
   });
 };
 
+const findAll = async () => {
+  return prisma.representante.findMany();
+};
+
 const findByCpf = async (cpf) => {
   return prisma.representante.findUnique({
     where: { cpf: cpf },
@@ -33,6 +37,7 @@ export default {
   create,
   findById,
   findByCpf,
+  findAll,
   update,
   remove,
 };

@@ -20,6 +20,7 @@ import documentRouter from './routes/documentRouter.js';
 import relatorioRouter from './routes/relatorioRoutes.js';
 import planilhaRouter from './routes/planilhaRouter.js';
 import calendarRouter from './routes/calendarRouter.js';
+import representanteRouter from './routes/representanteRouter.js';
 
 // --- Swagger Config ---
 import swaggerOptions from './config/swaggerConfig.js';
@@ -57,6 +58,7 @@ app.use('/api/document', documentRouter);
 app.use('/api/relatorio', relatorioRouter);
 app.use('/api/planilha', planilhaRouter);
 app.use('/api/calendar', calendarRouter);
+app.use('/api/representante', representanteRouter);
 
 // --- Rota de teste ---
 app.get('/', (req, res) => {

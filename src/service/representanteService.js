@@ -24,6 +24,10 @@ const updateRepresentante = async (id, representanteData) => {
   return representanteModel.update(id, representanteData);
 };
 
+  const getAllRepresentantes = async () => {
+    return await representanteModel.findAll();
+  };
+
 const getRepresentanteById = async (id) => {
     const representante = await representanteModel.findById(id);
     if (!representante) {
@@ -32,9 +36,18 @@ const getRepresentanteById = async (id) => {
     return representante;
 };
 
+const deleteRepresentante = async (id) => {
+    const existing = await representanteModel.findById(id);
+    if (!existing) {
+      throw new Error('Representante não encontrado.');
+    }
+    return await representanteModel.remove(id);
+}
+
 export default {
   createRepresentante,
   updateRepresentante,
   getRepresentanteById,
-  // ...
+  getAllRepresentantes,
+  deleteRepresentante
 };

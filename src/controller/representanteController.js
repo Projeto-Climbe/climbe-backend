@@ -1,5 +1,14 @@
 import representanteService from '../service/representanteService.js';
 
+const create = async (req, res) => {
+  try {
+    const newRepresentante = await representanteService.createRepresentante(req.body);
+    res.status(201).json({ message: 'Representante criado com sucesso!', data: newRepresentante });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 const getById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -40,6 +49,7 @@ const remove = async (req, res) => {
 };
 
 export default {
+  create,
   getById,
   getAll,
   update,

@@ -18,7 +18,48 @@ async function main() {
     { name: 'Analista de BPO Financeiro' }
   ];
 
+  const permissions = [
+  'Visualização, criação, edição e exclusão de Contratos',
+  'Visualização, criação, edição e exclusão de cargos',
+  'Visualização, criação, edição e exclusão de documentos jurídicos',
+  'Aplicação de nível de complexidade de contratos',
+  'Edição restrita da planilha com necessidade de solicitar permissão',
+  'Agendamento de Reuniões',
+  'Visualização, criação, edição e exclusão de relatórios',
+  'Upload de arquivos',
+  'Download de arquivos',
+  ];
+
+  const service = [
+
+    'Contabilidade',
+    'Avaliações de Empresas (Valuation)',
+    'Terceirização de Rotinas Financeiras (BPO)',
+    'Diretoria Financeira Sob Demanda (CFO)',
+    'Fusões & Aquisições (M&A)'
+  ]
+
   console.log(`📝  Carregados ${roles.length} cargos para inserir.`);
+  console.log(`📝  Carregadas ${permissions.length} permissões para inserir.`);
+  console.log(`📝  Carregados ${service.length} serviços para inserir.`);
+
+  for (const servico of service) {
+    const result = await prisma.service.upsert({
+      where: { name: servico },
+      update: {},
+      create: { name: servico },
+    });
+    console.log(`✅  Serviço processado: ${result.name}`);
+  }
+
+  for (const permission of permissions) {
+    const result = await prisma.permission.upsert({
+      where: { name: permission },
+      update: {},
+      create: { name: permission },
+    });
+    console.log(`✅  Permissão processada: ${result.name}`);
+  }
 
   for (const role of roles) {
     const result = await prisma.role.upsert({

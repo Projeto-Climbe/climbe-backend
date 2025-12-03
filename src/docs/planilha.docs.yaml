@@ -73,7 +73,7 @@ paths:
         '400':
           description: Erro na busca
 
-  /api/planilha/{id}:
+  /planilha/{id}:
     get:
       tags:
         - Planilhas
@@ -149,3 +149,28 @@ paths:
           description: Planilha não encontrada
         '400':
           description: Erro na exclusão
+
+  /planilha/upload:
+    post:
+      tags:
+        - Planilhas
+      summary: Faz upload de uma ou mais planilhas e envia para o webhook
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Upload e envio realizados com sucesso
+        '400':
+          description: Erro no upload ou envio

@@ -1,4 +1,6 @@
 import { planilhaService } from '../service/planilhaService.js';
+import axios from 'axios';
+import FormData from 'form-data';
 
 export async function create(req, res) {
   try {
@@ -54,5 +56,33 @@ export async function remove(req, res) {
   } catch (error) {
     const status = error.message.includes('não encontrada') ? 404 : 400;
     res.status(status).json({ error: error.message });
+  }
+}
+
+export async function uploadAndSendToWebhook(req, res) {
+  try {
+    if (!req.files || req.files.length === 0) {
+      throw new Error('Nenhum arquivo foi enviado.');
+    }
+
+    if (req.files.length > 1) {
+      throw new Error('Apenas um arquivo pode ser enviado por vez.');
+    }
+
+    const webhookUrl = 'https://n8n.fluxiaapp.com.br/webhook/drive';
+
+    const formData = new FormData();
+    const file = req.files[0];
+    formData.append('files', file.buffer, file.originalname); // Envia apenas um arquivo
+
+    console.log(req.files);
+
+    const response = await axios.post(webhookUrl, formData, {
+      headers: formData.getHeaders(),
+    });
+
+    res.status(200).json({ message: 'Arquivo enviado com sucesso.', data: response.data });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 }
